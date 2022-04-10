@@ -1,1 +1,43 @@
-<p>posts works!</p>
+<div class="container-md">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Posts</li>
+    </ol>
+  </nav>
+
+  <h1>Posts</h1>
+
+  <div class="btn-group me-3">
+    <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+      <button type="button" class="btn px-2 btn-outline-secondary dropdown-toggle" ngbDropdownToggle>{{filter}}</button>
+      <div class="dropdown-menu" ngbDropdownMenu>
+        <button ngbDropdownItem (click)="setFilter('User')">User</button>
+        <button ngbDropdownItem (click)="setFilter('Title')">Title</button>
+      </div>
+    </div>
+  </div>
+
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">User</th>
+      <th scope="col">Title</th>
+      <th scope="col">Content</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let post of posts">
+      <th scope="row">{{post.id}}</th>
+      <td><a class="text-nowrap" [routerLink]="'/user/'+post.userId" >User {{post.userId}}</a></td>
+      <td>
+        <a class="" [routerLink]="post.id.toString(10)">{{post.title}}</a>
+        </td>
+      <td>{{post.body}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

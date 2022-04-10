@@ -1,1 +1,61 @@
-<p>dashboard works!</p>
+<div *ngIf="isLoading" class="spinner-border m-2" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+<ng-container *ngIf="!isLoading">
+  <div class="px-5 py-3 bg-dark text-white">
+    Welcome to
+    <h1>My App</h1>
+  </div>
+  <div class="container-md">
+    <div class="row">
+
+      <div class="col-lg-4 col-md-6 p-2">
+        <div class="card">
+          <div class="card-header">Statistics</div>
+          <div class="card-body">
+            <div class="row text-nowrap">
+              <div class="col">
+                <span class="count">123</span> Posts
+              </div>
+              <div class="col"><span class="count">12</span> Albums</div>
+              <div class="col"><span class="count">1,234</span> Photos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6 p-2">
+        <div class="card">
+          <div class="card-header">Latest Posts</div>
+          <div class="card-body">
+            <div *ngFor="let post of posts" class="text-truncate overflow-hidden py-1">
+              <a [routerLink]="'/posts/'+post.id">{{post.title}}</a>
+              <div class="text-truncate overflow-hidden">{{post.body}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6 p-2">
+        <div class="card">
+          <div class="card-header">Recent Photos</div>
+          <div class="card-body">
+            <div class="row">
+              <div *ngFor="let photo of photos" class="col-4 p-3 bg-light">
+                <img [src]="photo.thumbnailUrl" class="img-thumbnail">
+                <div class="text-truncate overflow-hidden">
+                  <a [routerLink]="'/photos/'+photo.id">{{photo.title}}</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-container>
+
+
+
+
+

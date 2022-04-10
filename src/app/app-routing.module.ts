@@ -23,9 +23,12 @@ const routes: Routes = [
     }
   },
   {
-    path: 'user', loadChildren: () => {
+    path: 'user/:id', loadChildren: () => {
       return import('./modules/user/user.module').then(m => m.UserModule);
     }
+  },
+  {
+    path: '', redirectTo: '/dashboard', pathMatch: 'full'
   },
 ];
 

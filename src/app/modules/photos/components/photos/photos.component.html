@@ -1,1 +1,39 @@
-<p>photos works!</p>
+<div class="container-md">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Photos</li>
+    </ol>
+  </nav>
+
+  <h1>Photos</h1>
+
+  <div class="btn-group me-3">
+    <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+      <button type="button" class="btn px-2 btn-outline-secondary dropdown-toggle" ngbDropdownToggle>{{filter}}</button>
+      <div class="dropdown-menu" ngbDropdownMenu>
+        <button ngbDropdownItem (click)="setFilter('Album')">Album</button>
+        <button ngbDropdownItem (click)="setFilter('Title')">Title</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="photos">
+    <div class="row">
+      <div *ngFor="let photo of photos" class="col-sm-12 col-md-3 col-xxl-2 py-1">
+        <div>
+          <img [src]="photo.url" class="img-thumbnail">
+          <div class="bg-light text-truncate" ><a [routerLink]="photo.id.toString(10)" > {{photo.title}}</a></div>
+          <div class="bg-light"> <a [routerLink]="'/albums/'+photo.albumId">View Album</a></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="spinner-border my-2" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+
+</div>

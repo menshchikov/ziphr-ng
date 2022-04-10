@@ -1,0 +1,47 @@
+<ng-container *ngIf="user">
+
+  <div class="px-5 py-3 bg-primary text-white">
+    <h1>{{user.name}}</h1>
+    <div class="text-light">
+      <span>@{{user.username}}</span>
+      &mdash;
+      <span>{{user.email}}</span>
+      &mdash;
+      <span>{{user.website}}</span>
+      &mdash;
+      <span>{{user.company.name}}</span>
+      &mdash;
+      <span>{{user.address.city}}</span>
+    </div>
+  </div>
+
+  <div class="row m-2">
+
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-header">Albums</div>
+        <div class="card-body">
+          <div *ngFor="let album of albums"  class=" text-truncate overflow-hidden py-1">
+            <a  [routerLink]="'/albums/'+album.id">{{album.title}}</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-header">Posts</div>
+        <div class="card-body ">
+            <div *ngFor="let post of posts" class="text-truncate overflow-hidden py-1">
+              <div><a [routerLink]="'/posts/'+post.id">{{post.title}}</a></div>
+              <div>{{post.body}}</div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ng-container>
+
+<div *ngIf="isLoading" class="spinner-border m-2" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>

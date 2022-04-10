@@ -1,0 +1,25 @@
+.app-main-container{
+ display: flex;
+}
+.sidebar {
+  width: 200px;
+  //position: fixed;
+  padding: 10px;
+  height: 100vh;
+
+  .brand {
+    margin: 16px;
+    font-weight: bold;
+  }
+}
+
+.container {
+  //margin-left: 200px;
+  padding: 0px;
+  height: 100vh;
+  overflow: auto;
+}
+
+:host ::ng-deep a{
+  text-decoration: none !important;
+}

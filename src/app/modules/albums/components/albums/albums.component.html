@@ -1,1 +1,42 @@
-<p>albums works!</p>
+<div class="container-md">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Albums</li>
+    </ol>
+  </nav>
+
+  <h1>Albums</h1>
+
+  <div class="btn-group me-3">
+    <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+      <button type="button" class="btn px-2 btn-outline-secondary dropdown-toggle" ngbDropdownToggle>{{filter}}</button>
+      <div class="dropdown-menu" ngbDropdownMenu>
+        <button ngbDropdownItem (click)="setFilter('User')">User</button>
+        <button ngbDropdownItem (click)="setFilter('Title')">Title</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="row py-2">
+      <div *ngFor="let album of albums" class="col-sm-12 col-md-6 col-xxl-3 py-2">
+        <div class="card">
+          <div class="card-header text-nowrap overflow-hidden text-truncate">
+            <a [routerLink]="album.id.toString(10)">{{album.title}}</a>
+          </div>
+          <div class="card-body p-0 d-flex justify-content-center align-items-center">
+            <img *ngFor="let photo of albumPhotos[album.id]" [src]="photo.thumbnailUrl" class="m-2 img-box" >
+          </div>
+          <div class="card-footer">By <a [routerLink]="'/user/'+album.userId">User {{album.userId}}</a></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="isLoading" class="spinner-border d-block my-2" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+
+</div>

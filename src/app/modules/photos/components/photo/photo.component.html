@@ -1,1 +1,17 @@
-<p>photo works!</p>
+<div class="container-md">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/photos">Photos</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{photoId}}</li>
+    </ol>
+  </nav>
+  <div *ngIf="photo">
+    <h2>{{photo.title}}</h2>
+    <div><a [routerLink]="'/albums/'+photo.albumId">View Album</a></div>
+    <div class="d-flex justify-content-center"><img [src]="photo.url" class="img-fluid"></div>
+  </div>
+  <div *ngIf="isLoading" class="spinner-border my-2" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
