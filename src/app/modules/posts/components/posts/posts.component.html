@@ -1,4 +1,4 @@
-<div class="container-md">
+<div *ngIf="!isLoading" class="container-md">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
@@ -40,4 +40,8 @@
     </tr>
     </tbody>
   </table>
+</div>
+
+<div *ngIf="isLoading" class="spinner-border m-2" role="status">
+  <span class="visually-hidden">Loading...</span>
 </div>
