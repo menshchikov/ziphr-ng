@@ -1,31 +1,50 @@
-import { Component, OnInit } from '@angular/core';
-import { Post } from "../../../../model/post.model";
-import { POSTSMOCK } from "../../../../model/posts-mock";
 import {
-  Photo,
-  PHOTOS_MOCK
-} from "../../../../model/photo";
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  select,
+  Store
+} from "@ngrx/store";
+import { init } from "../../store/dashboard.actions";
+import {
+  selectDashboardIsLoading,
+  selectDashboardState
+} from "../../store/dashboard.selectors";
+import { initialState } from "../../store/dashboard.reducer";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
-  posts: Post[] = [];
-  isLoading = false;
-  photos: Photo[] = [];
+export class DashboardComponent implements OnInit, OnDestroy {
+  isLoading$ = this.store$.select(selectDashboardIsLoading);
+  state = initialState;
+  private stateSubscription: Subscription;
 
-  constructor() { }
+  constructor(
+    private store$: Store
+  ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.photos = PHOTOS_MOCK.filter(a => a.id < 10);
-      this.posts = POSTSMOCK.filter(p => p.id < 10);
-      this.isLoading = false;
-    },2000)
+    this.store$.dispatch(init());
 
+    this.stateSubscription = this.store$.pipe(
+      select(selectDashboardState),
+    ).subscribe(
+      state => {
+        this.state = state;
+      }
+    )
+  }
+
+  ngOnDestroy(): void {
+    this.stateSubscription.unsubscribe();
   }
 
 }
