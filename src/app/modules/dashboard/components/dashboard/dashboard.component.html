@@ -2,7 +2,7 @@
   <span class="visually-hidden">Loading...</span>
 </div>
 
-<app-error-msg *ngIf="state.error" [error]="state.error"></app-error-msg>
+<app-error-msg *ngIf="state?.error" [error]="state.error"></app-error-msg>
 
 <ng-container *ngIf="(isLoading$|async) === false && !state.error">
   <div class="px-5 py-3 bg-dark text-white">

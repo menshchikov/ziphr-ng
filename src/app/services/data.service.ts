@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Post } from "../model/post.model";
+import {
+  Post,
+  PostSearchFieldsEnum
+} from "../model/post.model";
 import {
   map,
   Observable
@@ -8,6 +11,20 @@ import {
 import { Album } from "../model/album";
 import { Photo } from "../model/photo";
 import { User } from "../model/user";
+
+export interface GetPostsParams {
+  field?: PostSearchFieldsEnum;
+  expression?: string;
+  // sortField?: string;
+  // isAscending?: boolean;
+  pageSize?: number;
+  pageNumber?: number
+}
+
+export interface Collection<T>{
+  items: T[];
+  count: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +36,22 @@ export class DataService {
   ) {
   }
 
-  getPosts(): Observable<Post[]> {
+  getPosts(params?: GetPostsParams): Observable<Collection<Post>> {
     const url = 'https://jsonplaceholder.typicode.com/posts/';
-    return this.httpClient.get<Post[]>(url);
+    return this.httpClient.get<Post[]>(url).pipe(
+      map(posts => {
+        let result = posts;
+        if (params?.expression && params?.field) {
+          result = posts.filter(p => p[params.field].toString().includes(params.expression))
+        }
+        let count = result.length;
+        if ((params?.pageNumber || params?.pageNumber === 0) && params?.pageSize) {
+          let start = params.pageSize * params.pageNumber;
+          result = result.slice(start, (start + params.pageSize));
+        }
+        return { items: result, count };
+      })
+    );
   }
 
   getPost(id: number): Observable<Post> {

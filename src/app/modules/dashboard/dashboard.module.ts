@@ -5,7 +5,7 @@ import {RouterModule} from "@angular/router";
 import { StoreModule } from '@ngrx/store';
 import {
   dashboardFeatureKey,
-  reducer
+  dashboardReducer
 } from "./store/dashboard.reducer";
 import { EffectsModule } from '@ngrx/effects';
 import { DashboardEffects } from './store/dashboard.effects';
@@ -22,7 +22,7 @@ import { UtilsModule } from "../utils/utils.module";
   imports: [
     CommonModule,
     RouterModule.forChild([{ path: '', component: DashboardComponent }]),
-    StoreModule.forFeature(dashboardFeatureKey, reducer),
+    StoreModule.forFeature(dashboardFeatureKey, dashboardReducer),
     EffectsModule.forFeature([DashboardEffects]),
     HttpClientModule,
     UtilsModule,

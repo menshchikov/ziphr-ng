@@ -29,7 +29,7 @@ export const initialState: DashboardState = {
   error: undefined,
 };
 
-export const reducer = createReducer(
+export const dashboardReducer = createReducer(
   initialState,
   on(init,(state ) => ({
     ...state,

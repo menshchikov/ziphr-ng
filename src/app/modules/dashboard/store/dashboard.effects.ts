@@ -8,7 +8,10 @@ import {
   init,
   setData
 } from "./dashboard.actions";
-import { DataService } from "../../../services/data.service";
+import {
+  Collection,
+  DataService
+} from "../../../services/data.service";
 import {
   catchError,
   combineLatest,
@@ -44,13 +47,13 @@ export class DashboardEffects {
         this.dataService.getAlbums(),
         this.dataService.getPhotos(),
       ]).pipe(
-        map(([posts, albums, photos]: [Post[], Album[], Photo[]]) => {
+        map(([postsCollection, albums, photos]: [Collection<Post>, Album[], Photo[]]) => {
           const result = <DashboardState>({
             ...initialState,
             photosCount: photos.length,
             albumsCount: albums.length,
-            postsCount: posts.length,
-            latestPosts: posts.slice(posts.length-5),
+            postsCount: postsCollection.items.length,
+            latestPosts: postsCollection.items.slice(postsCollection.count-5),
             latestPhotos: photos.slice(photos.length-5),
           });
           return setData({ data: result });

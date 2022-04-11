@@ -4,3 +4,8 @@ export interface Post {
   title: string;
   body: string;
 }
+
+export enum PostSearchFieldsEnum {
+  userId = 'userId',
+  title = 'title',
+}
