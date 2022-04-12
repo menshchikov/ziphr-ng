@@ -1,5 +1,6 @@
 import {
   Component,
+  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
@@ -14,11 +15,13 @@ import {
 } from "../../../../model/photo";
 import {
   DataService,
+  GetCollectionFilter,
   GetCollectionParams,
 } from "../../../../services/data.service";
 import {
   BehaviorSubject,
   debounceTime,
+  skip,
   Subscription,
   take,
 } from "rxjs";
@@ -30,7 +33,7 @@ const PHOTOS_PAGE_SIZE = 8;
   templateUrl: './album.component.html',
   styleUrls: ['./album.component.scss']
 })
-export class AlbumComponent implements OnInit {
+export class AlbumComponent implements OnInit, OnDestroy {
   isAlbumLoading = false;
   isPhotosLoading = false;
   albumId = '';
@@ -38,7 +41,7 @@ export class AlbumComponent implements OnInit {
   photos: Photo[] = [];
   filterExpression$ = new BehaviorSubject<string>('');
   private searchSubscription: Subscription;
-  private expression: string;
+  private photosFilter: GetCollectionFilter = {fieldName: 'title', expression: '', operator: 'ct'};
   totalCount: number;
   currentPageNum = 0;
   pagesArray: number[];
@@ -56,7 +59,7 @@ export class AlbumComponent implements OnInit {
     const params = this.dataService.parseQueryParamsToCollectionParams(this.activatedRoute.snapshot.queryParams);
     if (params?.filters?.length) {
       this.currentPageNum = params.pageNumber;
-      this.expression = params.filters.find(f => f.fieldName === 'title')?.expression;
+      this.photosFilter = params.filters[0];
     }
     this.getPhotos();
 
@@ -69,9 +72,10 @@ export class AlbumComponent implements OnInit {
       });
 
     this.searchSubscription = this.filterExpression$.pipe(
+      skip(1), // ignore initial value
       debounceTime(400),
     ).subscribe((expression) => {
-      this.expression = expression;
+      this.photosFilter = {...this.photosFilter, expression};
       this.currentPageNum = 0;
       this.getPhotos();
     });
@@ -87,10 +91,7 @@ export class AlbumComponent implements OnInit {
     const getPhotosParams: GetCollectionParams = {
       pageSize: PHOTOS_PAGE_SIZE,
       pageNumber: this.currentPageNum,
-      filters: [
-        { fieldName: 'albumId', expression: this.albumId, operator: 'eq' },
-        { fieldName: 'title', expression: this.expression, operator: 'ct' }
-      ]
+      filters: [this.photosFilter]
     };
 
     // update query string
@@ -105,42 +106,24 @@ export class AlbumComponent implements OnInit {
         queryParamsHandling: 'merge', // remove to replace all query params by provided
       });
 
+    // filter by albumId
+    getPhotosParams.filters.push({ fieldName: 'albumId', expression: this.albumId, operator: 'eq' },)
+
     this.isPhotosLoading = true;
     this.dataService.getPhotos(getPhotosParams)
       .subscribe(collection => {
         this.photos = collection.items;
         this.totalCount = Math.ceil(collection.count / PHOTOS_PAGE_SIZE);
-        this.createPagesArray();
         this.isPhotosLoading = false;
       });
   }
 
-  private createPagesArray() {
-    let array = [];
-    for (let i = 0; i < this.totalCount; i++) {
-      array.push(i);
-    }
-    this.pagesArray = array;
+  ngOnDestroy(): void {
+    this.searchSubscription.unsubscribe();
   }
 
-  setPage(num: number) {
-    this.currentPageNum = num;
-    this.getPhotos();
-  }
-
-  nextPage() {
-    if(this.currentPageNum === this.totalCount-1){
-      return;
-    }
-    this.currentPageNum += 1;
-    this.getPhotos();
-  }
-
-  prevPage() {
-    if(this.currentPageNum === 0){
-      return;
-    }
-    this.currentPageNum -= 1;
+  pageChanged($event: number) {
+    this.currentPageNum = $event;
     this.getPhotos();
   }
 }

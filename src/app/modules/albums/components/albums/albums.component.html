@@ -36,24 +36,8 @@
       </div>
     </div>
 
-    <nav aria-label="..." *ngIf="(pages$|async).length > 1">
-      <ul class="pagination justify-content-center">
-        <li class="page-item"
-            [ngClass]="{'disabled':(pageNum$|async) === 0}"
-            (click)="prevPage()"
-        ><a class="page-link">Previous</a></li>
-        <li class="page-item" *ngFor="let num of (pages$|async)"
-            [ngClass]="{'active':(pageNum$|async) === num}"
-            (click)="setPage(num)"
-        >
-          <a class="page-link">{{num}}</a></li>
-        <li class="page-item"
-            [ngClass]="{'disabled':(pageNum$|async) === (pages$|async).length-1}"
-            (click)="nextPage()"
-        ><a class="page-link">Next</a>
-        </li>
-      </ul>
-    </nav>
+    <app-paginator [currentPageNum]="(pageNum$|async)" [totalCount]="(pages$|async)"
+                   (pageChanged)="changePage($event)"></app-paginator>
   </ng-container>
 
   <div *ngIf="(isLoading$|async)" class="spinner-border d-block my-2" role="status">

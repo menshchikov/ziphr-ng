@@ -13,23 +13,25 @@ import {
 } from "./store/albums.reducer";
 import { HttpClientModule } from "@angular/common/http";
 import { DataService } from "../../services/data.service";
+import { UtilsModule } from "../utils/utils.module";
 
 @NgModule({
   declarations: [
     AlbumsComponent,
     AlbumComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild([
-      { path: '', component: AlbumsComponent },
-      { path: ':id', component: AlbumComponent }
-    ]),
-    NgbModule,
-    StoreModule.forFeature(albumsFeatureKey, albumsReducer),
-    EffectsModule.forFeature([AlbumsEffects]),
-    HttpClientModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild([
+            { path: '', component: AlbumsComponent },
+            { path: ':id', component: AlbumComponent }
+        ]),
+        NgbModule,
+        StoreModule.forFeature(albumsFeatureKey, albumsReducer),
+        EffectsModule.forFeature([AlbumsEffects]),
+        HttpClientModule,
+        UtilsModule
+    ],
   providers:[
     DataService,
   ]

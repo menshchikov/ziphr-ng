@@ -155,7 +155,9 @@ export class DataService {
 
   getPhoto(id: number): Observable<Photo> {
     const url = 'https://jsonplaceholder.typicode.com/photos/' + id;
-    return this.httpClient.get<Photo>(url);
+    return this.httpClient.get<Photo>(url).pipe(
+      delay(500)
+    );
   }
 
   getLastPhotos(number: number) {
@@ -180,7 +182,7 @@ export class DataService {
   private filterAndSliceCollection<T>(items: T[], params: GetCollectionParams): Collection<T> {
     let result = items;
     params?.filters?.forEach((filter) => {
-      if (filter.expression === '') {
+      if (filter.expression === '' || filter.expression === undefined) {
         return;
       }
       switch (filter.operator) {

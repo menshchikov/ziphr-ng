@@ -1,15 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import {
   User,
-  USERS_MOCK
 } from "../../../../model/user";
 import { ActivatedRoute } from "@angular/router";
 import {
   Album,
-  ALBUMS_MOCK
 } from "../../../../model/album";
 import { Post } from "../../../../model/post.model";
-import { POSTSMOCK } from "../../../../model/posts-mock";
+import {
+  DataService,
+  GetCollectionParams
+} from "../../../../services/data.service";
+import {
+  combineLatest,
+  take
+} from "rxjs";
 
 @Component({
   selector: 'app-user',
@@ -17,26 +22,44 @@ import { POSTSMOCK } from "../../../../model/posts-mock";
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  user: User | undefined;
+  user: User ;
   isLoading = false;
-  userId = '';
+  userId:number;
   albums: Album[] = [];
   posts: Post[] = [];
 
-  constructor(route: ActivatedRoute) {
-    route.params.subscribe((params) => {
-      this.userId = params["id"];
-    });
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private dataService: DataService
+  ) {
   }
 
   ngOnInit(): void {
     this.isLoading = true;
-    setTimeout(() => {
-      this.user = USERS_MOCK[0];
-      this.albums = ALBUMS_MOCK.filter(a => a.id < 10);
-      this.posts = POSTSMOCK.filter(p => p.id < 10);
-      this.isLoading = false;
-    },1000)
+    const userIdStr = this.activatedRoute.snapshot.params['id'];
+    this.userId = parseInt(userIdStr,10);
+    const getAlbumsParams: GetCollectionParams = {
+      pageSize: 5,
+      pageNumber: 0,
+      filters: [{fieldName: 'userId', expression: userIdStr, operator: 'eq'}]
+    }
+    const getPostsParams: GetCollectionParams = {
+      pageSize: 5,
+      pageNumber: 0,
+      filters: [{fieldName: 'userId', expression: userIdStr, operator: 'eq'}]
+    }
+
+    combineLatest([
+      this.dataService.getUser(this.userId),
+      this.dataService.getAlbums(getAlbumsParams),
+      this.dataService.getPosts(getPostsParams),
+    ]).pipe(take(1))
+      .subscribe(([user, albumsCollection, postsCOllectoin]) => {
+        this.user = user;
+        this.albums = albumsCollection.items;
+        this.posts = postsCOllectoin.items;
+        this.isLoading = false;
+      });
 
   }
 

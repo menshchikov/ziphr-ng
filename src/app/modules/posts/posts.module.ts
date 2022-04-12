@@ -13,26 +13,28 @@ import {
 import { HttpClientModule } from "@angular/common/http";
 import { DataService } from "../../services/data.service";
 import { PostsEffects } from "./store/posts.effects";
+import { UtilsModule } from "../utils/utils.module";
 
 @NgModule({
   declarations: [
     PostsComponent,
     PostComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild([
-      {path: '', component: PostsComponent},
-      {
-        path: ":id",
-        component: PostComponent
-      },
-    ]),
-    NgbModule,
-    StoreModule.forFeature(postsFeatureKey, postsReducer),
-    EffectsModule.forFeature([PostsEffects]),
-    HttpClientModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild([
+            { path: '', component: PostsComponent },
+            {
+                path: ":id",
+                component: PostComponent
+            },
+        ]),
+        NgbModule,
+        StoreModule.forFeature(postsFeatureKey, postsReducer),
+        EffectsModule.forFeature([PostsEffects]),
+        HttpClientModule,
+        UtilsModule
+    ],
   providers: [
     DataService
   ]

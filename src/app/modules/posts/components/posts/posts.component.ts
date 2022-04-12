@@ -34,17 +34,8 @@ export class PostsComponent implements OnInit {
   isLoading$ = this.store$.select(selectPostsIsLoading);
   posts$ = this.store$.select(selectPostsPosts);
   filter$ = this.store$.select(selectPostsFilter).pipe(tap(filter => this.filter = filter));
-  pageNum$ = this.store$.select(selectPostsPageNumber).pipe(tap(pageNum => this.pageNum = pageNum));
-  pages$ = this.store$.select(selectPostsTotalPages).pipe(map(count => {
-    const pagesArray = []
-    this.totalPages = count;
-    for(let i=0;i<count;i++){
-      pagesArray.push(i);
-    }
-    return pagesArray;
-  }))
-  private pageNum: number;
-  private totalPages: number;
+  pageNum$ = this.store$.select(selectPostsPageNumber);
+  pages$ = this.store$.select(selectPostsTotalPages);
   private filter: GetCollectionFilter;
 
   constructor(
@@ -68,21 +59,7 @@ export class PostsComponent implements OnInit {
     this.store$.dispatch(setFilter({ filter }));
   }
 
-  setPage(pageNum: number) {
-    this.store$.dispatch(setPageNum({pageNum}));
-  }
-
-  prevPage() {
-    if(this.pageNum === 0){
-      return;
-    }
-    this.store$.dispatch(setPageNum({ pageNum: this.pageNum - 1 }));
-  }
-
-  nextPage() {
-    if(this.pageNum === this.totalPages-1){
-      return;
-    }
-    this.store$.dispatch(setPageNum({ pageNum: this.pageNum + 1 }));
+  pageChanged($event: number) {
+    this.store$.dispatch(setPageNum({ pageNum: $event }));
   }
 }

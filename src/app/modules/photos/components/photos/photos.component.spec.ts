@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PhotosComponent } from './photos.component';
+import { RouterTestingModule } from "@angular/router/testing";
+import { DataService } from "../../../../services/data.service";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('PhotosComponent', () => {
   let component: PhotosComponent;
@@ -8,7 +11,11 @@ describe('PhotosComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PhotosComponent ]
+      declarations: [ PhotosComponent ],
+      imports:[RouterTestingModule, HttpClientTestingModule],
+      providers:[
+        DataService
+      ],
     })
     .compileComponents();
   });

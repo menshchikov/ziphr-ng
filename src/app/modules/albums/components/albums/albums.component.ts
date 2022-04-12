@@ -30,17 +30,8 @@ export class AlbumsComponent implements OnInit {
   filter$ = this.store$.select(selectAlbumsFilter).pipe(tap(filter => this.filter = filter));
   albums$ = this.store$.select(selectAlbumsAlbumsWithPhotos);
   isLoading$ = this.store$.select(selectAlbumsIsLoading);
-  pageNum$ = this.store$.select(selectAlbumsPageNumber).pipe(tap(pageNum => this.pageNum = pageNum));
-  pages$ = this.store$.select(selectAlbumsTotalPages).pipe(map(count => {
-    const pagesArray = []
-    this.totalPages = count;
-    for(let i=0;i<count;i++){
-      pagesArray.push(i);
-    }
-    return pagesArray;
-  }))
-  private pageNum: number;
-  private totalPages: number;
+  pageNum$ = this.store$.select(selectAlbumsPageNumber);
+  pages$ = this.store$.select(selectAlbumsTotalPages);
   private filter: GetCollectionFilter;
 
   constructor(
@@ -63,21 +54,7 @@ export class AlbumsComponent implements OnInit {
     this.store$.dispatch(setFilter({ filter }));
   }
 
-  setPage(pageNum: number) {
-    this.store$.dispatch(setPageNum({pageNum}));
-  }
-
-  prevPage() {
-    if(this.pageNum === 0){
-      return;
-    }
-    this.store$.dispatch(setPageNum({ pageNum: this.pageNum - 1 }));
-  }
-
-  nextPage() {
-    if(this.pageNum === this.totalPages-1){
-      return;
-    }
-    this.store$.dispatch(setPageNum({ pageNum: this.pageNum + 1 }));
+  changePage($event: number) {
+    this.store$.dispatch(setPageNum({ pageNum: $event }));
   }
 }

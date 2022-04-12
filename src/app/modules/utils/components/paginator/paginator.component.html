@@ -1,0 +1,20 @@
+<nav aria-label="..." *ngIf="totalCount > 1">
+  <ul class="pagination justify-content-center">
+    <li class="page-item"
+        [ngClass]="{'disabled':currentPageNum === 0}"
+        (click)="prevPage()"
+    ><a class="page-link">Previous</a></li>
+    <li class="page-item" *ngFor="let num of pagesArray"
+        [ngClass]="{'active':currentPageNum === num}"
+        (click)="setPage(num)"
+    >
+      <a class="page-link" *ngIf="num !== -1">{{num}}</a>
+      <a class="page-link border-bottom-0 border-top-0" *ngIf="num === -1">...</a>
+    </li>
+    <li class="page-item"
+        [ngClass]="{'disabled':currentPageNum === totalCount-1}"
+        (click)="nextPage()"
+    ><a class="page-link">Next</a>
+    </li>
+  </ul>
+</nav>

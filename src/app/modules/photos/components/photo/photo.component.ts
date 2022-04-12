@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import {
   Photo,
-  PHOTOS_MOCK
 } from "../../../../model/photo";
+import { DataService } from "../../../../services/data.service";
+import { take } from "rxjs";
 
 @Component({
   selector: 'app-photo',
@@ -12,23 +16,26 @@ import {
 })
 export class PhotoComponent implements OnInit {
 
-  public photoId = '';
-  public photo: Photo|undefined;
+  public photoId: number;
+  public photo: Photo;
   public isLoading = false;
 
-  constructor(route: ActivatedRoute) {
-    route.params.subscribe((params) => {
-      this.photoId = params["id"];
-    });
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private dataService: DataService
+  ) {
   }
 
   ngOnInit(): void {
     this.isLoading = true;
-    setTimeout(() => {
-      this.photo = PHOTOS_MOCK[0];
-      this.isLoading = false;
-    },1000)
+    this.photoId = parseInt(this.activatedRoute.snapshot.params['id'], 10);
 
+    this.dataService.getPhoto(this.photoId)
+      .pipe(take(1))
+      .subscribe(photo => {
+        this.photo = photo;
+        this.isLoading = false;
+      })
   }
 
 }
