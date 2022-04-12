@@ -1,9 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import {ALBUMS_MOCK} from "../../../../model/album";
 import {
   Photo,
-  PHOTOS_MOCK
 } from "../../../../model/photo";
+import { Store } from "@ngrx/store";
+import {
+  selectAlbumsAlbumsWithPhotos,
+  selectAlbumsFilter,
+  selectAlbumsIsLoading,
+  selectAlbumsPageNumber,
+  selectAlbumsTotalPages
+} from "../../store/albums.selectors";
+import {
+  init,
+  setFilter,
+  setPageNum
+} from "../../store/albums.actions";
+import {
+  map,
+  tap
+} from "rxjs";
+import { GetCollectionFilter } from "../../../../services/data.service";
 
 @Component({
   selector: 'app-albums',
@@ -11,31 +27,57 @@ import {
   styleUrls: ['./albums.component.scss']
 })
 export class AlbumsComponent implements OnInit {
-  filter = 'User';
-  albums = ALBUMS_MOCK;
-  colors: string[] = [
-    'green', 'violet', 'lime', 'pink'
-  ];
-  albumPhotos: { [key: number]: Photo[] } = {};
-  isLoading = false;
+  filter$ = this.store$.select(selectAlbumsFilter).pipe(tap(filter => this.filter = filter));
+  albums$ = this.store$.select(selectAlbumsAlbumsWithPhotos);
+  isLoading$ = this.store$.select(selectAlbumsIsLoading);
+  pageNum$ = this.store$.select(selectAlbumsPageNumber).pipe(tap(pageNum => this.pageNum = pageNum));
+  pages$ = this.store$.select(selectAlbumsTotalPages).pipe(map(count => {
+    const pagesArray = []
+    this.totalPages = count;
+    for(let i=0;i<count;i++){
+      pagesArray.push(i);
+    }
+    return pagesArray;
+  }))
+  private pageNum: number;
+  private totalPages: number;
+  private filter: GetCollectionFilter;
 
-  constructor() { }
+  constructor(
+    private store$: Store,
+  ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    setTimeout(()=>{
-      PHOTOS_MOCK.forEach(p => {
-        if(!this.albumPhotos[p.albumId]){
-          this.albumPhotos[p.albumId] = [p];
-        }else if(this.albumPhotos[p.albumId].length < 4){
-          this.albumPhotos[p.albumId].push(p);
-        }
-      })
-      this.isLoading = false;
-    },1000)
+    this.store$.dispatch(init());
   }
 
-  setFilter(filter: string) {
-    this.filter = filter;
+  setFilterField(filterField: string, operator: 'eq'|'ct') {
+    let filter: GetCollectionFilter = { ...this.filter, fieldName: filterField, operator };
+    this.store$.dispatch(setFilter({ filter }));
+  }
+
+  setFilterExpression($event: Event) {
+    let target = ($event.currentTarget) as HTMLInputElement;
+    let expression = target.value;
+    let filter: GetCollectionFilter = { ...this.filter, expression};
+    this.store$.dispatch(setFilter({ filter }));
+  }
+
+  setPage(pageNum: number) {
+    this.store$.dispatch(setPageNum({pageNum}));
+  }
+
+  prevPage() {
+    if(this.pageNum === 0){
+      return;
+    }
+    this.store$.dispatch(setPageNum({ pageNum: this.pageNum - 1 }));
+  }
+
+  nextPage() {
+    if(this.pageNum === this.totalPages-1){
+      return;
+    }
+    this.store$.dispatch(setPageNum({ pageNum: this.pageNum + 1 }));
   }
 }

@@ -15,7 +15,6 @@ import {
 import {
   catchError,
   combineLatest,
-  delay,
   map,
   of,
   switchMap
@@ -40,21 +39,20 @@ export class DashboardEffects {
 
   $init = createEffect(() => this.actions$.pipe(
     ofType(init.type),
-    delay(2000),
     switchMap(action => {
       return combineLatest([
         this.dataService.getPosts(),
         this.dataService.getAlbums(),
         this.dataService.getPhotos(),
       ]).pipe(
-        map(([postsCollection, albums, photos]: [Collection<Post>, Album[], Photo[]]) => {
+        map(([postsCollection, albumsCollection, photosCollection]: [Collection<Post>, Collection<Album>, Collection<Photo>]) => {
           const result = <DashboardState>({
             ...initialState,
-            photosCount: photos.length,
-            albumsCount: albums.length,
+            photosCount: photosCollection.items.length,
+            albumsCount: albumsCollection.items.length,
             postsCount: postsCollection.items.length,
-            latestPosts: postsCollection.items.slice(postsCollection.count-5),
-            latestPhotos: photos.slice(photos.length-5),
+            latestPosts: postsCollection.items.slice(postsCollection.count - 5),
+            latestPhotos: photosCollection.items.slice(photosCollection.count - 5),
           });
           return setData({ data: result });
         }),

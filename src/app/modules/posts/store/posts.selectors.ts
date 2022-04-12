@@ -9,13 +9,9 @@ export const selectPostsIsLoading = createSelector(
   selectPostsState,
   state => state.isLoading
 )
-export const selectPostsFilterField = createSelector(
+export const selectPostsFilter = createSelector(
   selectPostsState,
-  state => state.filterField
-)
-export const selectPostsFilterExpression = createSelector(
-  selectPostsState,
-  state => state.filterExpression
+  state => state.filter
 )
 export const selectPostsPosts = createSelector(
   selectPostsState,

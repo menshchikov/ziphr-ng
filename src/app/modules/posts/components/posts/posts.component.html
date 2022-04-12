@@ -1,4 +1,4 @@
-<div *ngIf="(isLoading$|async)===false" class="container-md">
+<div class="container-md">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
@@ -8,59 +8,71 @@
 
   <h1>Posts</h1>
 
-  <div class="btn-group me-3">
-    <input type="text" class="form-control" aria-label="Text input with dropdown button" (input)="setFilterExpression($event)" [value]="(filterExpression$|async)">
+  <div class="btn-group me-3" *ngIf="(filter$|async) as filter">
+    <input type="text" class="form-control" aria-label="Text input with dropdown button"
+           (input)="setFilterExpression($event)"
+           [value]="filter.expression">
     <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
-      <button type="button" class="btn px-2 btn-outline-secondary dropdown-toggle" ngbDropdownToggle>{{(filterField$|async)}}</button>
+      <button type="button"
+              class="btn px-2 btn-outline-secondary dropdown-toggle"
+              ngbDropdownToggle>
+        {{filter.fieldName}}
+      </button>
       <div class="dropdown-menu" ngbDropdownMenu>
-        <button ngbDropdownItem (click)="setFilterField('userId')">userId</button>
-        <button ngbDropdownItem (click)="setFilterField('title')">title</button>
+        <button ngbDropdownItem (click)="setFilterField('userId', 'eq')">userId</button>
+        <button ngbDropdownItem (click)="setFilterField('title', 'ct')">title</button>
       </div>
     </div>
   </div>
 
-  <table class="table">
-    <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">User</th>
-      <th scope="col">Title</th>
-      <th scope="col">Content</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let post of (posts$|async)">
-      <th scope="row">{{post.id}}</th>
-      <td><a class="text-nowrap" [routerLink]="'/user/'+post.userId" >User {{post.userId}}</a></td>
-      <td>
-        <a class="" [routerLink]="post.id.toString(10)">{{post.title}}</a>
-        </td>
-      <td>{{post.body}}</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="my-2">
+    <ng-container *ngIf="(isLoading$|async)===false">
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">User</th>
+          <th scope="col">Title</th>
+          <th scope="col">Content</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let post of (posts$|async)">
+          <th scope="row">{{post.id}}</th>
+          <td><a class="text-nowrap" [routerLink]="'/user/'+post.userId">User {{post.userId}}</a></td>
+          <td>
+            <a class="" [routerLink]="post.id.toString(10)">{{post.title}}</a>
+          </td>
+          <td>{{post.body}}</td>
+        </tr>
+        </tbody>
+      </table>
 
-  <nav aria-label="..." *ngIf="(pages$|async).length > 0">
-    <ul class="pagination">
-      <li class="page-item"
-          [ngClass]="{'disabled':(pageNum$|async) === 0}"
-          (click)="prevPage()"
-      ><a class="page-link">Previous</a></li>
-      <li class="page-item" *ngFor="let num of (pages$|async)"
-          [ngClass]="{'active':(pageNum$|async) === num}"
-          (click)="setPage(num)"
-      >
-        <a class="page-link">{{num}}</a></li>
-      <li class="page-item"
-          [ngClass]="{'disabled':(pageNum$|async) === (pages$|async).length-1}"
-          (click)="nextPage()"
-      ><a class="page-link">Next</a>
-      </li>
-    </ul>
-  </nav>
+      <nav aria-label="..." *ngIf="(pages$|async).length > 0">
+        <ul class="pagination justify-content-center">
+          <li class="page-item"
+              [ngClass]="{'disabled':(pageNum$|async) === 0}"
+              (click)="prevPage()"
+          ><a class="page-link">Previous</a></li>
+          <li class="page-item" *ngFor="let num of (pages$|async)"
+              [ngClass]="{'active':(pageNum$|async) === num}"
+              (click)="setPage(num)"
+          >
+            <a class="page-link">{{num}}</a></li>
+          <li class="page-item"
+              [ngClass]="{'disabled':(pageNum$|async) === (pages$|async).length-1}"
+              (click)="nextPage()"
+          ><a class="page-link">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </ng-container>
+
+    <div *ngIf="(isLoading$|async)" class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 
 </div>
 
-<div *ngIf="(isLoading$|async)" class="spinner-border m-2" role="status">
-  <span class="visually-hidden">Loading...</span>
-</div>
+

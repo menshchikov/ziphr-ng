@@ -12,8 +12,7 @@ import {
   setPageNum
 } from '../../store/posts.actions';
 import {
-  selectPostsFilterExpression,
-  selectPostsFilterField,
+  selectPostsFilter,
   selectPostsIsLoading,
   selectPostsPageNumber,
   selectPostsPosts,
@@ -23,6 +22,7 @@ import {
   map,
   tap
 } from "rxjs";
+import { GetCollectionFilter } from "../../../../services/data.service";
 
 @Component({
   selector: 'app-posts',
@@ -33,9 +33,7 @@ import {
 export class PostsComponent implements OnInit {
   isLoading$ = this.store$.select(selectPostsIsLoading);
   posts$ = this.store$.select(selectPostsPosts);
-  filter = {field:'userId', expression:''};
-  filterExpression$ = this.store$.select(selectPostsFilterExpression).pipe(tap(exp => this.filter.expression = exp));
-  filterField$ = this.store$.select(selectPostsFilterField).pipe(tap(field => this.filter.field = field));
+  filter$ = this.store$.select(selectPostsFilter).pipe(tap(filter => this.filter = filter));
   pageNum$ = this.store$.select(selectPostsPageNumber).pipe(tap(pageNum => this.pageNum = pageNum));
   pages$ = this.store$.select(selectPostsTotalPages).pipe(map(count => {
     const pagesArray = []
@@ -47,6 +45,7 @@ export class PostsComponent implements OnInit {
   }))
   private pageNum: number;
   private totalPages: number;
+  private filter: GetCollectionFilter;
 
   constructor(
     private store$: Store,
@@ -57,14 +56,16 @@ export class PostsComponent implements OnInit {
     this.store$.dispatch(init());
   }
 
-  setFilterField(filterField: string) {
-    this.store$.dispatch(setFilter({ ...this.filter, field:filterField}));
+  setFilterField(fieldName: string, operator: 'eq' | 'ct') {
+    let filter = { ...this.filter, fieldName, operator };
+    this.store$.dispatch(setFilter({ filter }));
   }
 
   setFilterExpression($event: Event) {
     let target = ($event.currentTarget) as HTMLInputElement;
     let expression = target.value;
-    this.store$.dispatch(setFilter({...this.filter, expression: expression }));
+    let filter = { ...this.filter, expression };
+    this.store$.dispatch(setFilter({ filter }));
   }
 
   setPage(pageNum: number) {

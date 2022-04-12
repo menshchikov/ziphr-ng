@@ -1,44 +1,47 @@
 import {
   ActionCreator,
   createAction,
-  props,
+  props
 } from '@ngrx/store';
-import { Post } from "../../../model/post.model";
 import {
   Collection,
   GetCollectionFilter,
   GetCollectionParams
 } from "../../../services/data.service";
+import {
+  AlbumWithPhotos
+} from "../../../model/album";
 
 export const init = createAction(
-  '[Posts] init',
+  '[Albums] init',
 );
 
-export const getPosts = createAction(
-  '[Posts] getPosts',
-  props<{ getCollectionParams: GetCollectionParams}>()
+export const getAlbumsWithPhotos = createAction(
+  '[Albums] getAlbumsWithPhotos',
+  props<{ getCollectionParams: GetCollectionParams }>()
 );
 
-export const setPosts = createAction(
-  '[Posts] setPosts',
-  props<{ postsCollection: Collection<Post>, error: Error }>()
+export const setAlbumsWithPhotos = createAction(
+  '[Albums] setAlbumsWithPhotos',
+  props<{ collection: Collection<AlbumWithPhotos>, error: Error }>()
 );
 
 export const setFilter = createAction(
-  '[Posts] setFilter',
+  '[Albums] setFilter',
   props<{ filter: GetCollectionFilter}>()
 )
 
 export const setPageNum = createAction(
-  '[Posts] setPageNum',
+  '[Albums] setPageNum',
   props<{ pageNum: number}>()
 )
 
 export const initStateFromQueryParams = createAction(
-  '[Posts] initStateFromQueryParams',
+  '[Albums] initStateFromQueryParams',
   props<{ getCollectionParams: GetCollectionParams}>()
 )
 
 type ExtractActionPayloadType<Type> = (Type extends ActionCreator<any, infer V> ? V : never) extends (p: infer T) => infer T & any ? T : never
-export type GetPostsType = ExtractActionPayloadType<typeof getPosts>;
-export type SetFilterType = ExtractActionPayloadType<typeof setFilter>;
+export type GetAlbumsType = ExtractActionPayloadType<typeof getAlbumsWithPhotos>;
+export type SetFilterType = ExtractActionPayloadType<typeof setFilter>
+

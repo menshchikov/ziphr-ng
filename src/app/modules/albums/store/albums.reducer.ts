@@ -1,34 +1,33 @@
+import {  createReducer, on } from '@ngrx/store';
 import {
-  createReducer,
-  on
-} from '@ngrx/store';
-import { Post } from "../../../model/post.model";
-import {
-  getPosts,
   init,
   initStateFromQueryParams,
   setFilter,
   setPageNum,
-  setPosts,
-} from "./posts.actions";
+  setAlbumsWithPhotos,
+  getAlbumsWithPhotos,
+} from "./albums.actions";
+import {
+  AlbumWithPhotos
+} from "../../../model/album";
 import {
   GetCollectionFilter,
   PAGE_SIZE
 } from "../../../services/data.service";
 
-export const postsFeatureKey = 'posts';
+export const albumsFeatureKey = 'albums';
 
-export interface PostsState {
+export interface AlbumsState {
   isLoading: boolean;
-  posts: Post[];
+  albumsWithPhotos: AlbumWithPhotos[];
   pageNumber: number;
   filter: GetCollectionFilter;
   error: Error;
   totalPages: number;
 }
 
-export const initialState: PostsState = {
-  posts: [],
+export const initialState: AlbumsState = {
+  albumsWithPhotos: [],
   filter: { fieldName: "userId", expression: '', operator: 'eq' },
   isLoading: false,
   pageNumber: 0,
@@ -36,9 +35,9 @@ export const initialState: PostsState = {
   totalPages: 0,
 };
 
-export const postsReducer = createReducer(
+export const albumsReducer = createReducer(
   initialState,
-  on(init, (state) => ({
+  on(init,(state ) => ({
     ...state,
     isLoading: true,
     error: undefined,
@@ -48,26 +47,26 @@ export const postsReducer = createReducer(
     filter: action.filter,
     pageNumber: 0,
   })),
-  on(setPageNum, (state, { pageNum }) => ({
+  on(setPageNum, (state, { pageNum}) => ({
     ...state,
     pageNumber: pageNum,
   })),
-  on(getPosts, (state, action) => ({
+  on(getAlbumsWithPhotos, (state, action) => ({
     ...state,
-    posts: [],
+    albumsWithPhotos: [],
     error: undefined,
     isLoading: true,
   })),
-  on(setPosts, (state, { postsCollection, error }) => ({
+  on(setAlbumsWithPhotos, (state, action) => ({
     ...state,
-    posts: postsCollection.items,
-    error: error,
-    totalPages: Math.ceil(postsCollection.count / PAGE_SIZE),
+    albumsWithPhotos: action.collection.items,
+    error: action.error,
+    totalPages: Math.ceil(action.collection.count / PAGE_SIZE),
     isLoading: false,
   })),
   on(initStateFromQueryParams, (state, action) => ({
     ...state,
-    filter: action.getCollectionParams.filters[0],
+    filter: action.getCollectionParams?.filters[0],
     pageNumber: action.getCollectionParams.pageNumber,
   }))
 );

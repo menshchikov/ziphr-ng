@@ -5,15 +5,15 @@ import {
   ofType
 } from '@ngrx/effects';
 import {
-  getPosts,
-  GetPostsType,
+  getAlbumsWithPhotos,
+  GetAlbumsType,
   init,
   initStateFromQueryParams,
+  setAlbumsWithPhotos,
   setFilter,
-  SetFilterType,
   setPageNum,
-  setPosts,
-} from "./posts.actions";
+  SetFilterType,
+} from "./albums.actions";
 import {
   DataService,
   GetCollectionParams,
@@ -34,10 +34,10 @@ import {
 import {
   Store
 } from "@ngrx/store";
-import { initialState } from "../../albums/store/albums.reducer";
+import { initialState } from "./albums.reducer";
 
 @Injectable()
-export class PostsEffects {
+export class AlbumsEffects {
 
   constructor(
     private actions$: Actions,
@@ -54,21 +54,21 @@ export class PostsEffects {
       switchMap((action) => {
         let params = this.activatedRoute.snapshot.queryParams
         let getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
-        if (!getCollectionParams?.filters?.length) {
+        if(!getCollectionParams?.filters?.length) {
           getCollectionParams.filters = [initialState.filter];
         }
         return [
-          initStateFromQueryParams({ getCollectionParams }),
-          getPosts({ getCollectionParams })
-        ];
+            initStateFromQueryParams({ getCollectionParams }),
+            getAlbumsWithPhotos({ getCollectionParams })
+          ];
       })
     );
   });
 
-  $getPosts = createEffect(() => {
+  $getAlbums = createEffect(() =>{
     return this.actions$.pipe(
-      ofType(getPosts.type),
-      tap((action: GetPostsType) => {
+      ofType(getAlbumsWithPhotos.type),
+      tap((action: GetAlbumsType) => {
         const queryParams = this.dataService.parseCollectionParamsToQueryParams(action.getCollectionParams);
         this.router.navigate(
           [],
@@ -80,10 +80,10 @@ export class PostsEffects {
             queryParamsHandling: 'merge', // remove to replace all query params by provided
           });
       }),
-      switchMap(({ getCollectionParams }) => {
-        return this.dataService.getPosts(getCollectionParams).pipe(
-          map((postsCollection) => setPosts({ postsCollection, error: undefined })),
-          catchError(err => of(setPosts({ postsCollection: undefined, error: err })))
+      switchMap(({getCollectionParams}) => {
+        return this.dataService.getAlbumsWithPhotos(getCollectionParams).pipe(
+          map((collection) => setAlbumsWithPhotos({ collection, error: undefined })),
+          catchError(err => of(setAlbumsWithPhotos({ collection: undefined, error: err })))
         )
       })
     )
@@ -99,7 +99,7 @@ export class PostsEffects {
           pageNumber: 0,
           filters: [action.filter]
         }
-        return getPosts({ getCollectionParams });
+        return getAlbumsWithPhotos({ getCollectionParams });
       })
     );
   });
@@ -108,10 +108,10 @@ export class PostsEffects {
     return this.actions$.pipe(
       ofType(setPageNum.type),
       map(({ pageNum }) => {
-        const params = this.activatedRoute.snapshot.queryParams;
-        const getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
+        let params = this.activatedRoute.snapshot.queryParams;
+        let getCollectionParams= this.dataService.parseQueryParamsToCollectionParams(params);
         getCollectionParams.pageNumber = pageNum;
-        return getPosts({ getCollectionParams })
+        return getAlbumsWithPhotos({getCollectionParams})
       })
     );
   });

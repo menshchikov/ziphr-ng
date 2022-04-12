@@ -2,26 +2,40 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   Post,
-  PostSearchFieldsEnum
 } from "../model/post.model";
 import {
+  combineLatest,
+  delay,
   map,
   Observable
 } from "rxjs";
-import { Album } from "../model/album";
+import {
+  Album,
+  AlbumWithPhotos
+} from "../model/album";
 import { Photo } from "../model/photo";
 import { User } from "../model/user";
+import { Params } from "@angular/router";
 
-export interface GetPostsParams {
-  field?: PostSearchFieldsEnum;
-  expression?: string;
+export const PAGE_SIZE = 5;
+export const PAGE_SIZE_PARAM = 'pageSize';
+export const PAGE_NUM_PARAM = 'pageNum';
+
+export class GetCollectionFilter {
+  fieldName: string;
+  expression: string;
+  operator: 'ct' | 'eq';
+}
+
+export interface GetCollectionParams {
   // sortField?: string;
   // isAscending?: boolean;
   pageSize?: number;
   pageNumber?: number
+  filters?: GetCollectionFilter[]
 }
 
-export interface Collection<T>{
+export interface Collection<T> {
   items: T[];
   count: number;
 }
@@ -36,41 +50,92 @@ export class DataService {
   ) {
   }
 
-  getPosts(params?: GetPostsParams): Observable<Collection<Post>> {
+  parseCollectionParamsToQueryParams(params: GetCollectionParams): Params {
+    const result: Params = {};
+    result[PAGE_SIZE_PARAM] = params.pageSize;
+    result[PAGE_NUM_PARAM] = params.pageNumber;
+    params?.filters?.forEach((f, index) => {
+      result['filterField' + index] = f.fieldName;
+      result['filterValue' + index] = f.expression;
+      result['filterOperator' + index] = f.operator;
+    });
+    return result;
+  }
+
+  parseQueryParamsToCollectionParams(params: Params): GetCollectionParams {
+    const result: GetCollectionParams = {
+      pageSize: params[PAGE_SIZE_PARAM]? parseInt(params[PAGE_SIZE_PARAM]) : PAGE_SIZE,
+      pageNumber: params[PAGE_NUM_PARAM] ? parseInt(params[PAGE_NUM_PARAM]) : 0,
+      filters: this.parseQueryParamsFilters(params),
+    };
+    return result;
+  }
+
+  private parseQueryParamsFilters(params: Params): GetCollectionFilter[] {
+    const result: GetCollectionFilter[] = [];
+    let index = 0;
+    let key = 'filterField0';
+    while (params[key]) {
+      result.push({
+        fieldName: params[key],
+        expression: params['filterValue' + index],
+        operator: params['filterOperator' + index]
+      });
+      index += 1;
+      key = 'filterField' + index;
+    }
+    return result;
+  }
+
+  getPosts(params?: GetCollectionParams): Observable<Collection<Post>> {
     const url = 'https://jsonplaceholder.typicode.com/posts/';
     return this.httpClient.get<Post[]>(url).pipe(
+      delay(500),
       map(posts => {
-        let result = posts;
-        if (params?.expression && params?.field) {
-          result = posts.filter(p => p[params.field].toString().includes(params.expression))
-        }
-        let count = result.length;
-        if ((params?.pageNumber || params?.pageNumber === 0) && params?.pageSize) {
-          let start = params.pageSize * params.pageNumber;
-          result = result.slice(start, (start + params.pageSize));
-        }
-        return { items: result, count };
+        return this.filterAndSliceCollection(posts, params);
       })
     );
   }
 
   getPost(id: number): Observable<Post> {
     const url = 'https://jsonplaceholder.typicode.com/posts/' + id;
-    return this.httpClient.get<Post>(url);
+    return this.httpClient.get<Post>(url).pipe(
+      delay(500),
+    );
   }
 
-  getLastPosts(number: number) {
-    const url = 'https://jsonplaceholder.typicode.com/posts/';
-    return this.httpClient.get<Post[]>(url).pipe(
-      map((posts) => {
-        posts.slice(posts.length-number)
+  getAlbums(params?: GetCollectionParams): Observable<Collection<Album>> {
+    const url = 'https://jsonplaceholder.typicode.com/albums/';
+    return this.httpClient.get<Album[]>(url).pipe(
+      delay(500),
+      map(albums => {
+        return this.filterAndSliceCollection(albums, params);
       })
     );
   }
 
-  getAlbums(): Observable<Album[]> {
+  getAlbumsWithPhotos(params?: GetCollectionParams): Observable<Collection<AlbumWithPhotos>> {
     const url = 'https://jsonplaceholder.typicode.com/albums/';
-    return this.httpClient.get<Album[]>(url);
+    return combineLatest([
+      this.httpClient.get<Album[]>(url),
+      this.getPhotos()
+    ])
+      .pipe(
+        delay(500),
+        map(([albums, photosCollection]) => {
+          const albumsCollection = this.filterAndSliceCollection(albums, params);
+          const albumsWithPhotosCollection = {
+            count: albumsCollection.count,
+            items: albumsCollection.items.map(a => {
+              return <AlbumWithPhotos>{
+                ...a,
+                photos: photosCollection.items.filter(p => p.albumId === a.id).slice(0, 4) // todo move to params
+              };
+            })
+          };
+          return albumsWithPhotosCollection;
+        })
+      );
   }
 
   getAlbum(id: number): Observable<Album> {
@@ -78,9 +143,14 @@ export class DataService {
     return this.httpClient.get<Album>(url);
   }
 
-  getPhotos(): Observable<Photo[]> {
+  getPhotos(params?: GetCollectionParams): Observable<Collection<Photo>> {
     const url = 'https://jsonplaceholder.typicode.com/photos/';
-    return this.httpClient.get<Photo[]>(url);
+    return this.httpClient.get<Photo[]>(url).pipe(
+      delay(500),
+      map(photos => {
+        return this.filterAndSliceCollection(photos, params);
+      })
+    );
   }
 
   getPhoto(id: number): Observable<Photo> {
@@ -92,7 +162,7 @@ export class DataService {
     const url = 'https://jsonplaceholder.typicode.com/photos/';
     return this.httpClient.get<Photo[]>(url).pipe(
       map((photos) => {
-        photos.slice(photos.length-number)
+        photos.slice(photos.length - number)
       })
     );
   }
@@ -105,6 +175,31 @@ export class DataService {
   getUser(id: number): Observable<User> {
     const url = 'https://jsonplaceholder.typicode.com/users/' + id;
     return this.httpClient.get<User>(url);
+  }
+
+  private filterAndSliceCollection<T>(items: T[], params: GetCollectionParams): Collection<T> {
+    let result = items;
+    params?.filters?.forEach((filter) => {
+      if (filter.expression === '') {
+        return;
+      }
+      switch (filter.operator) {
+        case "ct": {
+          result = result.filter(p => p[filter.fieldName as keyof T].toString().includes(filter.expression));
+          break;
+        }
+        case "eq": {
+          result = result.filter(p => p[filter.fieldName as keyof T].toString() === filter.expression);
+          break
+        }
+      }
+    })
+    let count = result.length;
+    if ((params?.pageNumber || params?.pageNumber === 0) && params?.pageSize) {
+      let start = params.pageSize * params.pageNumber;
+      result = result.slice(start, (start + params.pageSize));
+    }
+    return { items: result, count };
   }
 
 
