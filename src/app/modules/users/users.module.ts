@@ -4,6 +4,8 @@ import {RouterModule} from "@angular/router";
 import { UserComponent } from './components/user/user.component';
 import { DataService } from "../../services/data.service";
 import { HttpClientModule } from "@angular/common/http";
+import { NotFoundComponent } from "../utils/components/not-found/not-found.component";
+import { UtilsModule } from "../utils/utils.module";
 
 @NgModule({
   declarations: [
@@ -12,12 +14,14 @@ import { HttpClientModule } from "@angular/common/http";
   imports: [
     CommonModule,
     RouterModule.forChild([
-      {path:'', component: UserComponent}
+      { path: ':id', component: UserComponent },
+      { path: '**', component: NotFoundComponent, },
     ]),
-    HttpClientModule
+    HttpClientModule,
+    UtilsModule
   ],
   providers:[
     DataService
   ]
 })
-export class UserModule { }
+export class UsersModule { }

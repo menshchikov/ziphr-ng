@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import {RouterModule} from "@angular/router";
+import { RouterModule } from "@angular/router";
 import { StoreModule } from '@ngrx/store';
 import {
   dashboardFeatureKey,
@@ -27,8 +27,9 @@ import { UtilsModule } from "../utils/utils.module";
     HttpClientModule,
     UtilsModule,
   ],
-  providers:[
+  providers: [
     DataService,
   ]
 })
-export class DashboardModule { }
+export class DashboardModule {
+}

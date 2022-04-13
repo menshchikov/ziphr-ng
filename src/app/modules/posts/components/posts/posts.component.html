@@ -39,7 +39,7 @@
         <tbody>
         <tr *ngFor="let post of (posts$|async)">
           <th scope="row">{{post.id}}</th>
-          <td><a class="text-nowrap" [routerLink]="'/user/'+post.userId">User {{post.userId}}</a></td>
+          <td><a class="text-nowrap" [routerLink]="'/users/'+post.userId">User {{post.userId}}</a></td>
           <td>
             <a class="" [routerLink]="post.id.toString(10)">{{post.title}}</a>
           </td>

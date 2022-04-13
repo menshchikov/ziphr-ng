@@ -13,4 +13,8 @@
   <div *ngIf="isLoading" class="spinner-border" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
+  <div *ngIf="error">
+    <app-not-found *ngIf="error.status === 404"></app-not-found>
+    <app-error-msg *ngIf="error.status !== 404" [error]="error"></app-error-msg>
+  </div>
 </div>

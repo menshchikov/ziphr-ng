@@ -2,7 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Post} from "../../../../model/post.model";
 import { DataService } from "../../../../services/data.service";
-import { take } from "rxjs";
+import {
+  catchError,
+  finalize,
+  of,
+  take
+} from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-post',
@@ -13,6 +19,7 @@ export class PostComponent implements OnInit {
   public postId = '';
   public post: Post|undefined;
   public isLoading = false;
+  public error: HttpErrorResponse;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -24,14 +31,17 @@ export class PostComponent implements OnInit {
     this.isLoading = true;
     this.postId = this.activatedRoute.snapshot.params['id'];
 
-    this.dataService.getPost(parseInt(this.postId, 10))
+    const postId = parseInt(this.postId, 10);
+    this.dataService.getPost(postId)
       .pipe(
-        take(1)
+        take(1),
+        catchError(err => {
+          this.error = err;
+          return of(undefined);
+        }),
+        finalize(() => this.isLoading = false),
       )
-      .subscribe(post => {
-        this.post = post;
-        this.isLoading = false;
-      });
+      .subscribe(post => this.post = post);
   }
 
 }

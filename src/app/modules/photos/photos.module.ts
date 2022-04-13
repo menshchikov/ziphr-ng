@@ -9,6 +9,7 @@ import {
   HttpClientModule
 } from "@angular/common/http";
 import { UtilsModule } from "../utils/utils.module";
+import { NotFoundComponent } from "../utils/components/not-found/not-found.component";
 
 
 @NgModule({
@@ -16,16 +17,17 @@ import { UtilsModule } from "../utils/utils.module";
     PhotosComponent,
     PhotoComponent
   ],
-    imports: [
-        CommonModule,
-        RouterModule.forChild([
-            { path: '', component: PhotosComponent },
-            { path: ':id', component: PhotoComponent }
-        ]),
-        NgbModule,
-        HttpClientModule,
-        UtilsModule
-    ],
+  imports: [
+    CommonModule,
+    RouterModule.forChild([
+      { path: '', component: PhotosComponent },
+      { path: ':id', component: PhotoComponent },
+      { path: '**', component: NotFoundComponent, },
+    ]),
+    NgbModule,
+    HttpClientModule,
+    UtilsModule
+  ],
   providers: [
     DataService
   ]

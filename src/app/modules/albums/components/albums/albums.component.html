@@ -31,7 +31,7 @@
           <div class="card-body p-0 d-flex justify-content-center align-items-center">
             <img *ngFor="let photo of album.photos" [src]="photo.thumbnailUrl" class="m-2 img-box" >
           </div>
-          <div class="card-footer">By <a [routerLink]="'/user/'+album.userId">User {{album.userId}}</a></div>
+          <div class="card-footer">By <a [routerLink]="'/users/'+album.userId">User {{album.userId}}</a></div>
         </div>
       </div>
     </div>

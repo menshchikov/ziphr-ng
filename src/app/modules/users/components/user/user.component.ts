@@ -12,9 +12,13 @@ import {
   GetCollectionParams
 } from "../../../../services/data.service";
 import {
+  catchError,
   combineLatest,
+  finalize,
+  of,
   take
 } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-user',
@@ -27,6 +31,7 @@ export class UserComponent implements OnInit {
   userId:number;
   albums: Album[] = [];
   posts: Post[] = [];
+  error: HttpErrorResponse;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -53,7 +58,13 @@ export class UserComponent implements OnInit {
       this.dataService.getUser(this.userId),
       this.dataService.getAlbums(getAlbumsParams),
       this.dataService.getPosts(getPostsParams),
-    ]).pipe(take(1))
+    ]).pipe(take(1),
+      catchError(err => {
+        this.error = err;
+        return of(undefined);
+      }),
+      finalize(() => this.isLoading = false),
+      )
       .subscribe(([user, albumsCollection, postsCOllectoin]) => {
         this.user = user;
         this.albums = albumsCollection.items;

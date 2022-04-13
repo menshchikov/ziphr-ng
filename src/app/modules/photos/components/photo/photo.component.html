@@ -3,7 +3,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
       <li class="breadcrumb-item"><a routerLink="/photos">Photos</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{photoId}}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{photoIdStr}}</li>
     </ol>
   </nav>
   <div *ngIf="photo">
@@ -13,5 +13,9 @@
   </div>
   <div *ngIf="isLoading" class="spinner-border my-2" role="status">
     <span class="visually-hidden">Loading...</span>
+  </div>
+  <div *ngIf="error">
+    <app-not-found *ngIf="error.status === 404"></app-not-found>
+    <app-error-msg *ngIf="error.status !== 404" [error]="error"></app-error-msg>
   </div>
 </div>
