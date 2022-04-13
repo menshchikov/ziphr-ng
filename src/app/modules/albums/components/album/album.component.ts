@@ -20,11 +20,15 @@ import {
 } from "../../../../services/data.service";
 import {
   BehaviorSubject,
+  catchError,
   debounceTime,
+  finalize,
+  of,
   skip,
   Subscription,
   take,
 } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 const PHOTOS_PAGE_SIZE = 8;
 
@@ -36,7 +40,7 @@ const PHOTOS_PAGE_SIZE = 8;
 export class AlbumComponent implements OnInit, OnDestroy {
   isAlbumLoading = false;
   isPhotosLoading = false;
-  albumId = '';
+  albumIdStr = '';
   album: Album | undefined;
   photos: Photo[] = [];
   filterExpression$ = new BehaviorSubject<string>('');
@@ -45,6 +49,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
   totalCount: number;
   currentPageNum = 0;
   pagesArray: number[];
+  error: HttpErrorResponse;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -54,7 +59,21 @@ export class AlbumComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.albumId = this.activatedRoute.snapshot.params['id'];
+    this.albumIdStr = this.activatedRoute.snapshot.params['id'];
+
+    this.isAlbumLoading = true;
+    const albumId = parseInt(this.albumIdStr, 10);
+    this.dataService.getAlbum(albumId)
+      .pipe(take(1),
+        catchError(err => {
+          this.error = err;
+          return of(undefined);
+        }),
+        finalize(() => this.isAlbumLoading = false),
+        )
+      .subscribe((album) => {
+        this.album = album;
+      });
 
     const params = this.dataService.parseQueryParamsToCollectionParams(this.activatedRoute.snapshot.queryParams);
     if (params?.filters?.length) {
@@ -62,14 +81,6 @@ export class AlbumComponent implements OnInit, OnDestroy {
       this.photosFilter = params.filters[0];
     }
     this.getPhotos();
-
-    this.isAlbumLoading = true;
-    this.dataService.getAlbum(parseInt(this.albumId, 10))
-      .pipe(take(1))
-      .subscribe((album) => {
-        this.album = album;
-        this.isAlbumLoading = false;
-      });
 
     this.searchSubscription = this.filterExpression$.pipe(
       skip(1), // ignore initial value
@@ -107,7 +118,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
       });
 
     // filter by albumId
-    getPhotosParams.filters.push({ fieldName: 'albumId', expression: this.albumId, operator: 'eq' },)
+    getPhotosParams.filters.push({ fieldName: 'albumId', expression: this.albumIdStr, operator: 'eq' },)
 
     this.isPhotosLoading = true;
     this.dataService.getPhotos(getPhotosParams)

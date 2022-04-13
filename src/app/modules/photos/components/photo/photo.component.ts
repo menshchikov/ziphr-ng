@@ -7,7 +7,13 @@ import {
   Photo,
 } from "../../../../model/photo";
 import { DataService } from "../../../../services/data.service";
-import { take } from "rxjs";
+import {
+  catchError,
+  finalize,
+  of,
+  take
+} from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-photo',
@@ -16,9 +22,10 @@ import { take } from "rxjs";
 })
 export class PhotoComponent implements OnInit {
 
-  public photoId: number;
+  public photoIdStr: string;
   public photo: Photo;
   public isLoading = false;
+  error: HttpErrorResponse;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -28,13 +35,19 @@ export class PhotoComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.photoId = parseInt(this.activatedRoute.snapshot.params['id'], 10);
+    this.photoIdStr = this.activatedRoute.snapshot.params['id'];
 
-    this.dataService.getPhoto(this.photoId)
-      .pipe(take(1))
+    const photoId = parseInt(this.photoIdStr, 10);
+    this.dataService.getPhoto(photoId)
+      .pipe(take(1),
+        catchError(err => {
+          this.error = err;
+          return of(undefined);
+        }),
+        finalize(() => this.isLoading = false),
+        )
       .subscribe(photo => {
         this.photo = photo;
-        this.isLoading = false;
       })
   }
 

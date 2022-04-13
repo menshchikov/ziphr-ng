@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NotFoundComponent } from "./modules/utils/components/not-found/not-found.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'dashboard', loadChildren: () => {
       return import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule);
@@ -23,13 +24,12 @@ const routes: Routes = [
     }
   },
   {
-    path: 'user/:id', loadChildren: () => {
-      return import('./modules/user/user.module').then(m => m.UserModule);
+    path: 'users', loadChildren: () => {
+      return import('./modules/users/users.module').then(m => m.UsersModule);
     }
   },
-  {
-    path: '', redirectTo: '/dashboard', pathMatch: 'full'
-  },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '**', component: NotFoundComponent, },
 ];
 
 @NgModule({
