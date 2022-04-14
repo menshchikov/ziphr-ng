@@ -30,7 +30,6 @@ describe('AppRouting', () => {
   });
   it('/dashboard', waitForAsync(() => {
     router.navigate(["/dashboard"]).then(() => {
-      console.log(location.path());
       expect(location.path()).toBe("/dashboard");
     });
   }));
@@ -69,7 +68,6 @@ describe('AppRouting', () => {
   }));
   it('/posts/5', waitForAsync(() => {
     router.navigate(["/posts/5"]).then(() => {
-      console.log(location.path());
       expect(location.path()).toBe("/posts/5");
     });
   }));
@@ -82,13 +80,11 @@ describe('AppRouting', () => {
   }));
   it('/albums', waitForAsync(() => {
     router.navigate(["/albums"]).then(() => {
-      console.log(location.path());
       expect(location.path()).toBe("/albums");
     });
   }));
   it('/albums/5', waitForAsync(() => {
     router.navigate(["/albums/5"]).then(() => {
-      console.log(location.path());
       expect(location.path()).toBe("/albums/5");
     });
   }));
@@ -118,7 +114,6 @@ describe('AppRouting', () => {
   }));
   it('/users/5', waitForAsync(() => {
     router.navigate(["/users/5"]).then(() => {
-      console.log(location.path());
       expect(location.path()).toBe("/users/5");
     });
   }));

@@ -8,6 +8,7 @@ import {
   HttpClient,
   HttpHandler
 } from "@angular/common/http";
+import { UtilsModule } from "../../../utils/utils.module";
 
 describe('AlbumComponent', () => {
   let component: AlbumComponent;
@@ -16,7 +17,7 @@ describe('AlbumComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AlbumComponent ],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, UtilsModule],
       providers: [
         DataService,
         HttpClientTestingModule,

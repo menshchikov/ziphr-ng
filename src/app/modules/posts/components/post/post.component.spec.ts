@@ -8,6 +8,7 @@ import {
   HttpClient,
   HttpHandler
 } from "@angular/common/http";
+import { UtilsModule } from "../../../utils/utils.module";
 
 describe('PostComponent', () => {
   let component: PostComponent;
@@ -16,7 +17,7 @@ describe('PostComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ PostComponent ],
-      imports:[RouterTestingModule],
+      imports:[RouterTestingModule, UtilsModule],
       providers: [
         DataService,
         HttpClientTestingModule,

@@ -1,38 +1,43 @@
-<div class="px-5 py-3 bg-dark text-white">
+<div class="px-5 py-3 bg-dark text-white"
+     data-ref="header"
+>
   Welcome to
   <h1>My App</h1>
 </div>
 
 <div class="container-md" >
 
-  <div *ngIf="(isLoading$|async) === true" class="spinner-border m-2" role="status">
+  <div *ngIf="(isLoading$|async) === true"
+       data-ref="loading-indicator"
+       class="spinner-border m-2"
+       role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
 
-  <app-error-msg *ngIf="state?.error" [error]="state.error"></app-error-msg>
+  <app-error-msg *ngIf="state?.error && !state.isLoading" [error]="state.error"></app-error-msg>
 
   <div class="row" *ngIf="(isLoading$|async) === false && !state.error">
 
     <div class="col-lg-4 col-md-6 p-2">
-      <div class="card">
+      <div data-ref="statistics-card" class="card">
         <div class="card-header">Statistics</div>
         <div class="card-body">
           <div class="row text-nowrap">
-            <div class="col">
-              <span class="count">{{state.postsCount}}</span> Posts
-            </div>
-            <div class="col"><span class="count">{{state.albumsCount}}</span> Albums</div>
-            <div class="col"><span class="count">{{state.photosCount}}</span> Photos</div>
+            <div class="col"><span data-ref="posts-count" class="count">{{state.postsCount}}</span> Posts</div>
+            <div class="col"><span data-ref="albums-count" class="count">{{state.albumsCount}}</span> Albums</div>
+            <div class="col"><span data-ref="photos-count" class="count">{{state.photosCount}}</span> Photos</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="col-lg-4 col-md-6 p-2">
-      <div class="card">
+      <div data-ref="posts-card" class="card">
         <div class="card-header">Latest Posts</div>
         <div class="card-body">
-          <div *ngFor="let post of state.latestPosts" class="text-truncate overflow-hidden py-1">
+          <div *ngFor="let post of state.latestPosts"
+               class="text-truncate overflow-hidden py-1"
+          >
             <a [routerLink]="'/posts/'+post.id">{{post.title}}</a>
             <div class="text-truncate overflow-hidden">{{post.body}}</div>
           </div>
@@ -41,13 +46,14 @@
     </div>
 
     <div class="col-lg-4 col-md-6 p-2">
-      <div class="card">
+      <div data-ref="photos-card" class="card">
         <div class="card-header">Recent Photos</div>
         <div class="card-body">
           <div class="row">
-            <div *ngFor="let photo of state.latestPhotos" class="col-4 p-3 bg-light">
+            <div *ngFor="let photo of state.latestPhotos"
+                 class="col-4 p-3">
               <img [src]="photo.thumbnailUrl" class="img-thumbnail">
-              <div class="text-truncate overflow-hidden">
+              <div class="text-truncate overflow-hidden bg-light">
                 <a [routerLink]="'/photos/'+photo.id">{{photo.title}}</a></div>
             </div>
           </div>
