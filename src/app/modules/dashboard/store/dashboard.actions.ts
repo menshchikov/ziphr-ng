@@ -1,4 +1,8 @@
-import { createAction, props } from '@ngrx/store';
+import {
+  ActionCreator,
+  createAction,
+  props
+} from '@ngrx/store';
 import { DashboardState } from "./dashboard.reducer";
 
 export const init = createAction(
@@ -9,4 +13,3 @@ export const setData = createAction(
   '[Dashboard] setData',
   props<{ data: DashboardState }>()
 );
-

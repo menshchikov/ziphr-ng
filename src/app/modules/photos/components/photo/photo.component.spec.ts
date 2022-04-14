@@ -4,7 +4,6 @@ import { PhotoComponent } from './photo.component';
 import { RouterTestingModule } from "@angular/router/testing";
 import { DataService } from "../../../../services/data.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { ActivatedRoute } from "@angular/router";
 
 describe('PhotoComponent', () => {
   let component: PhotoComponent;

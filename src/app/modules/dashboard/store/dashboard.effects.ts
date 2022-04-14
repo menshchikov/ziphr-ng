@@ -13,6 +13,7 @@ import {
   DataService
 } from "../../../services/data.service";
 import {
+  asyncScheduler,
   catchError,
   combineLatest,
   map,
@@ -37,7 +38,11 @@ export class DashboardEffects {
   ) {
   }
 
-  $init = createEffect(() => this.actions$.pipe(
+  $init = createEffect(() => ({
+                                // assign default values
+                                debounce = 300,
+                                scheduler = asyncScheduler
+                              } = {}) => this.actions$.pipe(
     ofType(init.type),
     switchMap(action => {
       return combineLatest([
