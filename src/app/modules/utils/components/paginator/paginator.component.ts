@@ -23,9 +23,9 @@ export class PaginatorComponent implements OnChanges{
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    let array = [];
-    let left = this.currentPageNum - 3;
-    let right = this.currentPageNum + 3;
+    const array = [];
+    const left = this.currentPageNum - 3;
+    const right = this.currentPageNum + 3;
     let isLeftSpaceInsert = false;
     let isRightSpaceInsert = false;
     for (let i = 0; i < this.totalCount; i++) {

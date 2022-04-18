@@ -68,8 +68,8 @@ export class PhotosComponent implements OnInit, OnDestroy {
   }
 
   setFilterExpression($event: Event) {
-    let target = ($event.currentTarget) as HTMLInputElement;
-    let expression = target.value;
+    const target = ($event.currentTarget) as HTMLInputElement;
+    const expression = target.value;
     this.filterExpression$.next(expression);
   }
 
@@ -103,7 +103,7 @@ export class PhotosComponent implements OnInit, OnDestroy {
   }
 
   private createPagesArray() {
-    let array = [];
+    const array = [];
     for (let i = 0; i < this.totalCount; i++) {
       array.push(i);
     }

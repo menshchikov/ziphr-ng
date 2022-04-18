@@ -52,8 +52,8 @@ export class AlbumsEffects {
     return this.actions$.pipe(
       ofType(init.type),
       switchMap((action) => {
-        let params = this.activatedRoute.snapshot.queryParams
-        let getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
+        const params = this.activatedRoute.snapshot.queryParams
+        const getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
         if(!getCollectionParams?.filters?.length) {
           getCollectionParams.filters = [initialState.filter];
         }
@@ -94,7 +94,7 @@ export class AlbumsEffects {
       ofType(setFilter.type),
       debounceTime(400),
       map((action: SetFilterType) => {
-        let getCollectionParams: GetCollectionParams = {
+        const getCollectionParams: GetCollectionParams = {
           pageSize: PAGE_SIZE,
           pageNumber: 0,
           filters: [action.filter]
@@ -108,8 +108,8 @@ export class AlbumsEffects {
     return this.actions$.pipe(
       ofType(setPageNum.type),
       map(({ pageNum }) => {
-        let params = this.activatedRoute.snapshot.queryParams;
-        let getCollectionParams= this.dataService.parseQueryParamsToCollectionParams(params);
+        const params = this.activatedRoute.snapshot.queryParams;
+        const getCollectionParams= this.dataService.parseQueryParamsToCollectionParams(params);
         getCollectionParams.pageNumber = pageNum;
         return getAlbumsWithPhotos({getCollectionParams})
       })

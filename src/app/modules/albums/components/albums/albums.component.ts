@@ -43,14 +43,14 @@ export class AlbumsComponent implements OnInit {
   }
 
   setFilterField(filterField: string, operator: 'eq'|'ct') {
-    let filter: GetCollectionFilter = { ...this.filter, fieldName: filterField, operator };
+    const filter: GetCollectionFilter = { ...this.filter, fieldName: filterField, operator };
     this.store$.dispatch(setFilter({ filter }));
   }
 
   setFilterExpression($event: Event) {
-    let target = ($event.currentTarget) as HTMLInputElement;
-    let expression = target.value;
-    let filter: GetCollectionFilter = { ...this.filter, expression};
+    const target = ($event.currentTarget) as HTMLInputElement;
+    const expression = target.value;
+    const filter: GetCollectionFilter = { ...this.filter, expression};
     this.store$.dispatch(setFilter({ filter }));
   }
 

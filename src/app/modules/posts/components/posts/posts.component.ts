@@ -48,14 +48,14 @@ export class PostsComponent implements OnInit {
   }
 
   setFilterField(fieldName: string, operator: 'eq' | 'ct') {
-    let filter = { ...this.filter, fieldName, operator };
+    const filter = { ...this.filter, fieldName, operator };
     this.store$.dispatch(setFilter({ filter }));
   }
 
   setFilterExpression($event: Event) {
-    let target = ($event.currentTarget) as HTMLInputElement;
-    let expression = target.value;
-    let filter = { ...this.filter, expression };
+    const target = ($event.currentTarget) as HTMLInputElement;
+    const expression = target.value;
+    const filter = { ...this.filter, expression };
     this.store$.dispatch(setFilter({ filter }));
   }
 

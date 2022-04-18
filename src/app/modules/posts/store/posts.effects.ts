@@ -52,8 +52,8 @@ export class PostsEffects {
     return this.actions$.pipe(
       ofType(init.type),
       switchMap((action) => {
-        let params = this.activatedRoute.snapshot.queryParams
-        let getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
+        const params = this.activatedRoute.snapshot.queryParams
+        const getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(params);
         if (!getCollectionParams?.filters?.length) {
           getCollectionParams.filters = [initialState.filter];
         }
@@ -94,7 +94,7 @@ export class PostsEffects {
       ofType(setFilter.type),
       debounceTime(400),
       map((action: SetFilterType) => {
-        let getCollectionParams: GetCollectionParams = {
+        const getCollectionParams: GetCollectionParams = {
           pageSize: PAGE_SIZE,
           pageNumber: 0,
           filters: [action.filter]
