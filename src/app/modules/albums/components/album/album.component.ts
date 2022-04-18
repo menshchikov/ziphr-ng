@@ -93,8 +93,8 @@ export class AlbumComponent implements OnInit, OnDestroy {
   }
 
   setFilterExpression($event: Event) {
-    let target = ($event.currentTarget) as HTMLInputElement;
-    let expression = target.value;
+    const target = ($event.currentTarget) as HTMLInputElement;
+    const expression = target.value;
     this.filterExpression$.next(expression);
   }
 

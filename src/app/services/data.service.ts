@@ -21,7 +21,7 @@ export const PAGE_SIZE = 5;
 export const PAGE_SIZE_PARAM = 'pageSize';
 export const PAGE_NUM_PARAM = 'pageNum';
 
-export class GetCollectionFilter {
+export interface GetCollectionFilter {
   fieldName: string;
   expression: string;
   operator: 'ct' | 'eq';
@@ -196,9 +196,9 @@ export class DataService {
         }
       }
     })
-    let count = result.length;
+    const count = result.length;
     if ((params?.pageNumber || params?.pageNumber === 0) && params?.pageSize) {
-      let start = params.pageSize * params.pageNumber;
+      const start = params.pageSize * params.pageNumber;
       result = result.slice(start, (start + params.pageSize));
     }
     return { items: result, count };
