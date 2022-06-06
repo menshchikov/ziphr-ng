@@ -1,140 +1,66 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
-  Album,
-} from "../../../../model/album";
-import {
-  ActivatedRoute,
-  Router
-} from "@angular/router";
-import {
-  Photo,
-} from "../../../../model/photo";
-import {
-  DataService,
   GetCollectionFilter,
-  GetCollectionParams,
 } from "../../../../services/data.service";
 import {
-  BehaviorSubject,
-  catchError,
-  debounceTime,
-  finalize,
-  of,
-  skip,
-  Subscription,
-  take,
+  tap,
 } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
-
-const PHOTOS_PAGE_SIZE = 8;
+import { Store } from "@ngrx/store";
+import {
+  init,
+  setFilter,
+  setPageNum
+} from "../../store/album.actions";
+import {
+  selectAlbumAlbum,
+  selectAlbumAlbumId,
+  selectAlbumIsLoading,
+  selectAlbumPageNumber,
+  selectAlbumPhotos,
+  selectAlbumPhotosFilter,
+  selectAlbumTotalPages
+} from "../../store/album.selectors";
 
 @Component({
   selector: 'app-album',
   templateUrl: './album.component.html',
-  styleUrls: ['./album.component.scss']
+  styleUrls: ['./album.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AlbumComponent implements OnInit, OnDestroy {
-  isAlbumLoading = false;
-  isPhotosLoading = false;
-  albumIdStr = '';
-  album: Album | undefined;
-  photos: Photo[] = [];
-  filterExpression$ = new BehaviorSubject<string>('');
-  private searchSubscription: Subscription;
-  private photosFilter: GetCollectionFilter = {fieldName: 'title', expression: '', operator: 'ct'};
-  totalCount: number;
-  currentPageNum = 0;
-  pagesArray: number[];
+export class AlbumComponent implements OnInit {
+  private photosFilter: GetCollectionFilter;
+  pageNum$ = this.store$.select(selectAlbumPageNumber);
+  pagesTotalCount$ = this.store$.select(selectAlbumTotalPages);
   error: HttpErrorResponse;
 
+  album$ = this.store$.select(selectAlbumAlbum);
+  photos$ = this.store$.select(selectAlbumPhotos);
+  filter$ = this.store$.select(selectAlbumPhotosFilter).pipe(tap(filter => this.photosFilter = filter));
+  isLoading$ = this.store$.select(selectAlbumIsLoading);
+  albumId$ = this.store$.select(selectAlbumAlbumId);
+
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private dataService: DataService,
-    private router: Router,
+    private store$: Store,
   ) {
   }
 
   ngOnInit(): void {
-    this.albumIdStr = this.activatedRoute.snapshot.params['id'];
-
-    this.isAlbumLoading = true;
-    const albumId = parseInt(this.albumIdStr, 10);
-    this.dataService.getAlbum(albumId)
-      .pipe(take(1),
-        catchError(err => {
-          this.error = err;
-          return of(undefined);
-        }),
-        finalize(() => this.isAlbumLoading = false),
-        )
-      .subscribe((album) => {
-        this.album = album;
-      });
-
-    const params = this.dataService.parseQueryParamsToCollectionParams(this.activatedRoute.snapshot.queryParams);
-    if (params?.filters?.length) {
-      this.currentPageNum = params.pageNumber;
-      this.photosFilter = params.filters[0];
-    }
-    this.getPhotos();
-
-    this.searchSubscription = this.filterExpression$.pipe(
-      skip(1), // ignore initial value
-      debounceTime(400),
-    ).subscribe((expression) => {
-      this.photosFilter = {...this.photosFilter, expression};
-      this.currentPageNum = 0;
-      this.getPhotos();
-    });
+    this.store$.dispatch(init());
   }
 
   setFilterExpression($event: Event) {
     const target = ($event.currentTarget) as HTMLInputElement;
     const expression = target.value;
-    this.filterExpression$.next(expression);
-  }
-
-  private getPhotos() {
-    const getPhotosParams: GetCollectionParams = {
-      pageSize: PHOTOS_PAGE_SIZE,
-      pageNumber: this.currentPageNum,
-      filters: [this.photosFilter]
-    };
-
-    // update query string
-    const queryParams = this.dataService.parseCollectionParamsToQueryParams(getPhotosParams);
-    this.router.navigate(
-      [],
-      {
-        // relativeTo: activatedRoute,
-        queryParams: {
-          ...queryParams
-        },
-        queryParamsHandling: 'merge', // remove to replace all query params by provided
-      });
-
-    // filter by albumId
-    getPhotosParams.filters.push({ fieldName: 'albumId', expression: this.albumIdStr, operator: 'eq' },)
-
-    this.isPhotosLoading = true;
-    this.dataService.getPhotos(getPhotosParams)
-      .subscribe(collection => {
-        this.photos = collection.items;
-        this.totalCount = Math.ceil(collection.count / PHOTOS_PAGE_SIZE);
-        this.isPhotosLoading = false;
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.searchSubscription.unsubscribe();
+    const filter: GetCollectionFilter = { ...this.photosFilter, expression};
+    this.store$.dispatch(setFilter({ filter }));
   }
 
   pageChanged($event: number) {
-    this.currentPageNum = $event;
-    this.getPhotos();
+    this.store$.dispatch(setPageNum({ pageNum: $event }));
   }
 }

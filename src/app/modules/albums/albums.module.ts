@@ -15,6 +15,11 @@ import { HttpClientModule } from "@angular/common/http";
 import { DataService } from "../../services/data.service";
 import { UtilsModule } from "../utils/utils.module";
 import { NotFoundComponent } from "../utils/components/not-found/not-found.component";
+import { AlbumEffects } from "./store/album.effects";
+import {
+  albumFeatureKey,
+  albumReducer
+} from "./store/album.reducer";
 
 @NgModule({
   declarations: [
@@ -30,7 +35,8 @@ import { NotFoundComponent } from "../utils/components/not-found/not-found.compo
     ]),
     NgbModule,
     StoreModule.forFeature(albumsFeatureKey, albumsReducer),
-    EffectsModule.forFeature([AlbumsEffects]),
+    StoreModule.forFeature(albumFeatureKey, albumReducer),
+    EffectsModule.forFeature([AlbumsEffects, AlbumEffects]),
     HttpClientModule,
     UtilsModule
   ],

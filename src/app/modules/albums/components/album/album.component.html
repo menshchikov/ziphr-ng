@@ -3,7 +3,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
       <li class="breadcrumb-item"><a routerLink="/albums">Albums</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{albumIdStr}}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{(albumId$|async)}}</li>
     </ol>
   </nav>
 
@@ -15,14 +15,14 @@
   <div *ngIf="!error">
     <input type="text" class="form-control w-25" placeholder="Search"
               (input)="setFilterExpression($event)"
-              [value]="(filterExpression$|async)">
+              [value]="(filter$|async).expression">
 
     <div>
-      <div *ngIf="!isAlbumLoading && !isPhotosLoading">
-        <h2>{{album?.title}}</h2>
+      <div *ngIf="(isLoading$|async) === false">
+        <h2>{{(album$|async)?.title}}</h2>
 
         <div class="row">
-          <div *ngFor="let photo of photos" class="col-sm-12 col-md-3 col-xxl-2 py-1">
+          <div *ngFor="let photo of (photos$|async)" class="col-sm-12 col-md-3 col-xxl-2 py-1">
             <div>
               <img [src]="photo.url" class="img-thumbnail">
               <div class="bg-light text-truncate"><a [routerLink]="'/photos/'+photo.id">{{photo.title}}</a></div>
@@ -30,11 +30,11 @@
           </div>
         </div>
 
-        <app-paginator [totalCount]="totalCount" [currentPageNum]="currentPageNum"
+        <app-paginator [totalCount]="(pagesTotalCount$|async)" [currentPageNum]="(pageNum$|async)"
                        (pageChanged)="pageChanged($event)"></app-paginator>
 
       </div>
-      <div *ngIf="isAlbumLoading || isPhotosLoading" class="spinner-border m-2" role="status">
+      <div *ngIf="(isLoading$|async)" class="spinner-border m-2" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
