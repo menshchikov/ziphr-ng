@@ -1,126 +1,67 @@
 import {
   Component,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
-  Photo,
-} from "../../../../model/photo";
-import {
   ActivatedRoute,
-  Router
 } from "@angular/router";
 import {
   DataService,
   GetCollectionFilter,
-  GetCollectionParams
 } from "../../../../services/data.service";
 import {
-  BehaviorSubject,
-  debounceTime,
-  skip,
-  Subscription,
   tap
 } from "rxjs";
-
-const PHOTOS_PAGE_SIZE = 8;
+import { Store } from "@ngrx/store";
+import {
+  init,
+  setFilter,
+  setPageNum
+} from '../../store/photos.actions';
+import {
+  selectPhotosFilter,
+  selectPhotosIsLoading,
+  selectPhotosPageNum,
+  selectPhotosPhotos,
+  selectPhotosTotalCount
+} from "../../store/photos.selectors";
 
 @Component({
   selector: 'app-photos',
   templateUrl: './photos.component.html',
   styleUrls: ['./photos.component.scss']
 })
-export class PhotosComponent implements OnInit, OnDestroy {
-  filter: GetCollectionFilter = {fieldName:'albumId', expression: '', operator: 'eq'};
-  isLoading = false;
-  photos: Photo[] = [];
-  currentPageNum: number;
-  private searchSubscription: Subscription;
-  private filterExpression$ = new BehaviorSubject<string>('');
-  totalCount: number;
-  pagesArray: number[];
+export class PhotosComponent implements OnInit {
+  filter$ = this.store$.select(selectPhotosFilter).pipe(tap(filter => this.filter = filter))
+  private filter: GetCollectionFilter;
+  isLoading$ = this.store$.select(selectPhotosIsLoading);
+  photos$ = this.store$.select(selectPhotosPhotos);
+  currentPageNum$ = this.store$.select(selectPhotosPageNum);
+  totalCount$ = this.store$.select(selectPhotosTotalCount);
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private dataService: DataService,
-    private router: Router,
+    private store$: Store,
   ) { }
 
   ngOnInit(): void {
-
-    const params = this.dataService.parseQueryParamsToCollectionParams(this.activatedRoute.snapshot.queryParams);
-    this.currentPageNum = params.pageNumber;
-    if(params.filters[0]) {
-      this.filter = params.filters[0];
-    }
-    this.getPhotos();
-
-
-    this.searchSubscription = this.filterExpression$.pipe(
-      tap(expression => this.filter = {...this.filter, expression}),
-      skip(1), // ignore initial value
-      debounceTime(400),
-    ).subscribe((expression) => {
-      this.currentPageNum = 0;
-      this.getPhotos();
-    });
-
+    this.store$.dispatch(init());
   }
 
   setFilterExpression($event: Event) {
     const target = ($event.currentTarget) as HTMLInputElement;
     const expression = target.value;
-    this.filterExpression$.next(expression);
+    const filter: GetCollectionFilter = { ...this.filter, expression};
+    this.store$.dispatch(setFilter({ filter }));
   }
 
-  private getPhotos() {
-    const getPhotosParams: GetCollectionParams = {
-      pageSize: PHOTOS_PAGE_SIZE,
-      pageNumber: this.currentPageNum,
-      filters: [ this.filter ]
-    };
-
-    // update query string
-    const queryParams = this.dataService.parseCollectionParamsToQueryParams(getPhotosParams);
-    this.router.navigate(
-      [],
-      {
-        // relativeTo: activatedRoute,
-        queryParams: {
-          ...queryParams
-        },
-        queryParamsHandling: 'merge', // remove to replace all query params by provided
-      });
-
-    this.isLoading = true;
-    this.dataService.getPhotos(getPhotosParams)
-      .subscribe(collection => {
-        this.photos = collection.items;
-        this.totalCount = Math.ceil(collection.count / PHOTOS_PAGE_SIZE);
-        this.createPagesArray();
-        this.isLoading = false;
-      });
-  }
-
-  private createPagesArray() {
-    const array = [];
-    for (let i = 0; i < this.totalCount; i++) {
-      array.push(i);
-    }
-    this.pagesArray = array;
-  }
-
-  setFilterField(fieldName: string, operator: 'eq' | 'ct') {
-    this.filter = { ...this.filter, fieldName, operator };
-    this.getPhotos();
-  }
-
-  ngOnDestroy(): void {
-    this.searchSubscription.unsubscribe();
+  setFilterField(filterField: string, operator: 'eq'|'ct') {
+    const filter: GetCollectionFilter = { ...this.filter, fieldName: filterField, operator };
+    this.store$.dispatch(setFilter({ filter }));
   }
 
   pageChange($event: number) {
-    this.currentPageNum = $event;
-    this.getPhotos();
+    this.store$.dispatch(setPageNum({ pageNum: $event }));
   }
 }

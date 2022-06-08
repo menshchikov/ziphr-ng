@@ -10,6 +10,10 @@ import {
 } from "@angular/common/http";
 import { UtilsModule } from "../utils/utils.module";
 import { NotFoundComponent } from "../utils/components/not-found/not-found.component";
+import { StoreModule } from '@ngrx/store';
+import * as fromPhotos from './store/photos.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { PhotosEffects } from './store/photos.effects';
 
 
 @NgModule({
@@ -26,7 +30,9 @@ import { NotFoundComponent } from "../utils/components/not-found/not-found.compo
     ]),
     NgbModule,
     HttpClientModule,
-    UtilsModule
+    UtilsModule,
+    StoreModule.forFeature(fromPhotos.photosFeatureKey, fromPhotos.reducer),
+    EffectsModule.forFeature([PhotosEffects])
   ],
   providers: [
     DataService

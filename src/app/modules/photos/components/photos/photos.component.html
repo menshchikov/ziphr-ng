@@ -8,7 +8,7 @@
 
   <h1>Photos</h1>
 
-  <div class="btn-group me-3">
+  <div class="btn-group me-3" *ngIf="(filter$|async) as filter">
     <input type="text" class="form-control" aria-label="Text input with dropdown button"
            (input)="setFilterExpression($event)"
            [value]="filter.expression">
@@ -22,9 +22,9 @@
     </div>
   </div>
 
-  <div *ngIf="photos && !isLoading" >
+  <div *ngIf="(photos$|async) && (isLoading$|async) === false" >
     <div class="row">
-      <div *ngFor="let photo of photos" class="col-sm-12 col-md-3 col-xxl-2 py-1">
+      <div *ngFor="let photo of (photos$|async)" class="col-sm-12 col-md-3 col-xxl-2 py-1">
         <div>
           <img [src]="photo.url" class="img-thumbnail">
           <div class="bg-light text-truncate"><a [routerLink]="photo.id.toString(10)"> {{photo.title}}</a></div>
@@ -34,13 +34,13 @@
       </div>
     </div>
 
-    <app-paginator [currentPageNum]="currentPageNum" [totalCount]="totalCount"
+    <app-paginator [currentPageNum]="(currentPageNum$|async)" [totalCount]="(totalCount$|async)"
                    (pageChanged)="pageChange($event)"></app-paginator>
 
   </div>
 
   <div>
-    <div *ngIf="isLoading" class="spinner-border my-2" role="status">
+    <div *ngIf="(isLoading$|async) === true" class="spinner-border my-2" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
