@@ -6,7 +6,7 @@ import { ActivatedRoute } from "@angular/router";
 import {
   Album,
 } from "../../../../model/album";
-import { Post } from "../../../../model/post.model";
+import { Post } from "../../../../model/post";
 import {
   DataService,
   GetCollectionParams

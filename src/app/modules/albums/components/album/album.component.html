@@ -14,8 +14,9 @@
 
   <div *ngIf="!error">
     <input type="text" class="form-control w-25" placeholder="Search"
+           *ngIf="(filter$|async) as filter"
               (input)="setFilterExpression($event)"
-              [value]="(filter$|async).expression">
+              [value]="filter.expression">
 
     <div>
       <div *ngIf="(isLoading$|async) === false">

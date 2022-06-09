@@ -9,6 +9,8 @@ import {
   HttpHandler
 } from "@angular/common/http";
 import { UtilsModule } from "../../../utils/utils.module";
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState } from "../../store/album.reducer";
 
 describe('AlbumComponent', () => {
   let component: AlbumComponent;
@@ -23,6 +25,7 @@ describe('AlbumComponent', () => {
         HttpClientTestingModule,
         HttpClient,
         HttpHandler,
+        provideMockStore({initialState: initialState}),
       ]
     })
     .compileComponents();

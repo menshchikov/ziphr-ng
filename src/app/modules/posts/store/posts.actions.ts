@@ -3,7 +3,7 @@ import {
   createAction,
   props,
 } from '@ngrx/store';
-import { Post } from "../../../model/post.model";
+import { Post } from "../../../model/post";
 import {
   Collection,
   GetCollectionFilter,

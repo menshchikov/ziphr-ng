@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { concatMap } from 'rxjs/operators';
 import {
-  Observable,
-  EMPTY,
   switchMap,
   map,
   catchError,
@@ -27,8 +24,10 @@ import {
 } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { selectQueryParams } from "../../../store/app.selector";
-import { setPageNum } from "./photos.actions";
-import { SetPageNumType } from "../../albums/store/albums.actions";
+import {
+  setPageNum,
+  SetPageNumType
+} from "./photos.actions";
 import { PHOTOS_PAGE_SIZE } from "./photos.reducer";
 import { initialState } from "../../albums/store/albums.reducer";
 

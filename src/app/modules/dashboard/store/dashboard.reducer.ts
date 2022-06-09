@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { Post } from "../../../model/post.model";
+import { Post } from "../../../model/post";
 import { Photo } from "../../../model/photo";
 import {
   init,

@@ -5,6 +5,8 @@ import { RouterTestingModule } from "@angular/router/testing";
 import { DataService } from "../../../../services/data.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { UtilsModule } from "../../../utils/utils.module";
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState } from "../../store/photos.reducer";
 
 describe('PhotosComponent', () => {
   let component: PhotosComponent;
@@ -12,10 +14,15 @@ describe('PhotosComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PhotosComponent ],
-      imports:[RouterTestingModule, HttpClientTestingModule, UtilsModule],
-      providers:[
-        DataService
+      declarations: [PhotosComponent],
+      imports: [
+        RouterTestingModule,
+        HttpClientTestingModule,
+        UtilsModule,
+      ],
+      providers: [
+        DataService,
+        provideMockStore({ initialState: initialState }),
       ],
     })
     .compileComponents();

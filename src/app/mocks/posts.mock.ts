@@ -1,6 +1,6 @@
-import {Post} from "./post.model";
+import {Post} from "../model/post";
 
-export const POSTSMOCK: Post[] = [
+export const POSTS_MOCK: Post[] = [
   {
     "userId": 1,
     "id": 1,

@@ -2,7 +2,7 @@ import {
   createReducer,
   on
 } from '@ngrx/store';
-import { Post } from "../../../model/post.model";
+import { Post } from "../../../model/post";
 import {
   getPosts,
   init,

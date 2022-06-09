@@ -1,6 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {Post} from "../../../../model/post.model";
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import { ActivatedRoute } from "@angular/router";
+import { Post } from "../../../../model/post";
 import { DataService } from "../../../../services/data.service";
 import {
   catchError,

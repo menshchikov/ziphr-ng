@@ -24,7 +24,7 @@ import {
   DashboardState,
   initialState
 } from "./dashboard.reducer";
-import { Post } from "../../../model/post.model";
+import { Post } from "../../../model/post";
 import { Album } from "../../../model/album";
 import { Photo } from "../../../model/photo";
 

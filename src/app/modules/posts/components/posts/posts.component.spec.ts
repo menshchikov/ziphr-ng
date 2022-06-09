@@ -22,9 +22,9 @@ import {
 } from "../../store/posts.selectors";
 import { PostsState } from "../../store/posts.reducer";
 import { GetCollectionFilter } from "../../../../services/data.service";
-import { Post } from "../../../../model/post.model";
+import { Post } from "../../../../model/post";
 import { UtilsModule } from "../../../utils/utils.module";
-import { POSTSMOCK } from "../../../../model/posts-mock";
+import { POSTS_MOCK } from "../../../../mocks/posts.mock";
 import { RouterTestingModule } from "@angular/router/testing";
 
 describe('PostsComponent', () => {
@@ -87,7 +87,7 @@ describe('PostsComponent', () => {
 
   it('should show table', waitForAsync(() => {
     selectPostsIsLoadingMock.setResult(false);
-    selectPostsPostsMock.setResult([...POSTSMOCK.slice(0, 3)]);
+    selectPostsPostsMock.setResult([...POSTS_MOCK.slice(0, 3)]);
     selectPostsFilterMock.setResult({ fieldName:'title', expression: 'abc', operator: 'ct' });
     selectPostsPageNumberMock.setResult(0);
     selectPostsTotalPagesMock.setResult(1);
@@ -106,7 +106,7 @@ describe('PostsComponent', () => {
 
   it('should show table with paging', waitForAsync(() => {
     selectPostsIsLoadingMock.setResult(false);
-    selectPostsPostsMock.setResult([...POSTSMOCK.slice(0, 4)]);
+    selectPostsPostsMock.setResult([...POSTS_MOCK.slice(0, 4)]);
     selectPostsFilterMock.setResult({ fieldName:'title', expression: 'abc', operator: 'ct' });
     selectPostsPageNumberMock.setResult(1);
     selectPostsTotalPagesMock.setResult(2);

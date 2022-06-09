@@ -3,6 +3,10 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable } from 'rxjs';
 
 import { PhotosEffects } from './photos.effects';
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState } from "./photos.reducer";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { RouterTestingModule } from "@angular/router/testing";
 
 describe('PhotosEffects', () => {
   let actions$: Observable<any>;
@@ -12,7 +16,12 @@ describe('PhotosEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         PhotosEffects,
-        provideMockActions(() => actions$)
+        provideMockActions(() => actions$),
+        provideMockStore({initialState: initialState})
+      ],
+      imports:[
+        HttpClientTestingModule,
+        RouterTestingModule,
       ]
     });
 

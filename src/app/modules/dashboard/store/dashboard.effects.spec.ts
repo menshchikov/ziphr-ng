@@ -15,20 +15,20 @@ import {
   getTestScheduler,
   hot
 } from "jasmine-marbles";
-import { Post } from "../../../model/post.model";
+import { Post } from "../../../model/post";
 import {
   DashboardState,
   initialState
 } from "./dashboard.reducer";
 import {
-  Album,
-  ALBUMS_MOCK
+  Album
 } from "../../../model/album";
 import {
-  Photo,
-  PHOTOS_MOCK
+  Photo
 } from "../../../model/photo";
-import { POSTSMOCK } from "../../../model/posts-mock";
+import { POSTS_MOCK } from "../../../mocks/posts.mock";
+import { ALBUMS_MOCK } from "../../../mocks/albums.mock";
+import { PHOTOS_MOCK } from "../../../mocks/photos.mock";
 
 describe('DashboardEffects', () => {
   let actions$: Observable<any>;
@@ -39,7 +39,7 @@ describe('DashboardEffects', () => {
 
     dataServiceSpy = jasmine.createSpyObj(DataService,['getPosts', 'getAlbums','getPhotos']);
     dataServiceSpy.getPosts.and.returnValue(
-      of(<Collection<Post>>{ items: [...POSTSMOCK.slice(0,7)], count: 7 })
+      of(<Collection<Post>>{ items: [...POSTS_MOCK.slice(0,7)], count: 7 })
     );
     dataServiceSpy.getAlbums.and.returnValue(
       of(<Collection<Album>>{ items: [...ALBUMS_MOCK.slice(0,7)], count: 7 })
@@ -77,7 +77,7 @@ describe('DashboardEffects', () => {
           isLoading: false,
           latestPhotos: PHOTOS_MOCK.slice(2,7),
           error: undefined,
-          latestPosts: POSTSMOCK.slice(2,7),
+          latestPosts: POSTS_MOCK.slice(2,7),
           photosCount: 7,
           postsCount: 7
         },

@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
-  Post,
-} from "../model/post.model";
-import {
   combineLatest,
   delay,
   map,
@@ -13,6 +10,7 @@ import {
   Album,
   AlbumWithPhotos
 } from "../model/album";
+import { Post } from "../model/post";
 import { Photo } from "../model/photo";
 import { User } from "../model/user";
 import { Params } from "@angular/router";
