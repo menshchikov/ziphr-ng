@@ -1,5 +1,4 @@
 import {
-  async,
   ComponentFixture,
   TestBed,
   waitForAsync
@@ -10,7 +9,6 @@ import { AppModule } from "./app.module";
 import { routes } from "./app-routing.module";
 import { Router } from "@angular/router";
 import { Location } from "@angular/common";
-import { By } from "@angular/platform-browser";
 
 describe('AppComponent', () => {
   let router:Router;

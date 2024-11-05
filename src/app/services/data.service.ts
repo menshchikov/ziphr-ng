@@ -60,7 +60,7 @@ export class DataService {
     return result;
   }
 
-  parseQueryParamsToCollectionParams(params: Params): GetCollectionParams {
+  parseQueryParamsToCollectionParams(params: Params = {}): GetCollectionParams {
     const result: GetCollectionParams = {
       pageSize: params[PAGE_SIZE_PARAM]? parseInt(params[PAGE_SIZE_PARAM]) : PAGE_SIZE,
       pageNumber: params[PAGE_NUM_PARAM] ? parseInt(params[PAGE_NUM_PARAM]) : 0,

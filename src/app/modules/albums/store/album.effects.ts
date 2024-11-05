@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   Actions,
   createEffect,
-  ofType
+  ofType, concatLatestFrom
 } from '@ngrx/effects';
 import {
   getAlbum,
@@ -28,8 +28,6 @@ import {
   map,
   of,
   switchMap,
-  tap,
-  withLatestFrom
 } from "rxjs";
 import {
   ActivatedRoute,
@@ -61,7 +59,7 @@ export class AlbumEffects {
   $init = createEffect(() => {
     return this.actions$.pipe(
       ofType(init.type),
-      withLatestFrom(this.store$.select(selectRouteParams)),
+      concatLatestFrom(() => this.store$.select(selectRouteParams)),
       switchMap(([action, routerParams]) => {
         const params = this.activatedRoute.snapshot.queryParams;
 
