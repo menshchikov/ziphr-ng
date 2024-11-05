@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType, concatLatestFrom } from '@ngrx/effects';
 
 import {
   switchMap,
@@ -8,7 +8,6 @@ import {
   of,
   tap,
   debounceTime,
-  withLatestFrom
 } from 'rxjs';
 
 import * as PhotosActions from './photos.actions';
@@ -43,9 +42,9 @@ export class PhotosEffects {
   init$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(PhotosActions.init),
-      withLatestFrom(this.store$.select(selectQueryParams)),
+      concatLatestFrom(() => this.store$.select(selectQueryParams)),
       // concatMap(() => EMPTY as Observable<{ type: string }>)
-      switchMap(([action, queryParams]: [any, Params]) => {
+      switchMap(([action, queryParams = {}]: [any, Params]) => {
         const getCollectionParams = this.dataService.parseQueryParamsToCollectionParams(queryParams);
         getCollectionParams.pageSize = PHOTOS_PAGE_SIZE;
         if (!getCollectionParams?.filters?.length) {
@@ -103,7 +102,7 @@ export class PhotosEffects {
   $setPageNum = createEffect(() => {
     return this.actions$.pipe(
       ofType(setPageNum.type),
-      withLatestFrom(this.store$.select(selectQueryParams)),
+      concatLatestFrom(() => this.store$.select(selectQueryParams)),
       map(([action, queryParams]:[SetPageNumType, Params]) => {
         const getCollectionParams= this.dataService.parseQueryParamsToCollectionParams(queryParams);
         getCollectionParams.pageNumber = action.pageNum;

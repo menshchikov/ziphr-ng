@@ -3,10 +3,6 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  ActivatedRoute,
-} from "@angular/router";
-import {
-  DataService,
   GetCollectionFilter,
 } from "../../../../services/data.service";
 import {
@@ -40,8 +36,6 @@ export class PhotosComponent implements OnInit {
   totalCount$ = this.store$.select(selectPhotosTotalCount);
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private dataService: DataService,
     private store$: Store,
   ) { }
 

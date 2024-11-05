@@ -1,4 +1,4 @@
-import { Action, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import * as PhotosActions from './photos.actions';
 import { Photo } from "../../../model/photo";
 import { GetCollectionFilter } from "../../../services/data.service";
@@ -27,8 +27,8 @@ export const initialState: State = {
 export const reducer = createReducer(
   initialState,
 
-  on(PhotosActions.init, state => state),
-  on(PhotosActions.getPhotos, (state, action) => {
+  on(PhotosActions.init, (state): State => state),
+  on(PhotosActions.getPhotos, (state, action): State => {
     return {
       ...state,
       isLoading: true,
@@ -36,7 +36,7 @@ export const reducer = createReducer(
       error: undefined,
     }
   }),
-  on(PhotosActions.initStateFromQueryParams, (state, action) => {
+  on(PhotosActions.initStateFromQueryParams, (state, action): State => {
     return {
       ...state,
       filter: action.getCollectionParams.filters[0],
@@ -52,14 +52,14 @@ export const reducer = createReducer(
       error: action.error,
     }
   }),
-  on(PhotosActions.setFilter, (state, action) => {
+  on(PhotosActions.setFilter, (state, action): State => {
     return {
       ...state,
       filter: action.filter,
       pageNumber: 0,
     }
   }),
-  on(PhotosActions.setPageNum, (state, action) => {
+  on(PhotosActions.setPageNum, (state, action): State => {
     return {
       ...state,
       pageNumber: action.pageNum,
